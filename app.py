@@ -119,7 +119,7 @@ def generar_data_x_clave_rango(lista:list,key:str=None,rango:int=None)->str:
 
 def generar_linea(lista:list,i:int,key:str=None)->str:
     linea = ""
-    if key == None:
+    if key == None and key != "estadistica" and key != "logros":
         linea = "{0}".format(lista[i]["nombre"])
         for clave in lista[i]:
             if clave != "nombre":
@@ -127,8 +127,10 @@ def generar_linea(lista:list,i:int,key:str=None)->str:
     elif key == "nombre":
         linea = "{0}".format(lista[i][key])
     elif key == "estadisticas":
+        lista_values = []
         for clave in lista[i][key]:
-            pass
+            lista_values.append(clave)
+        linea = ",".join(lista_values[:])
     else:
         linea = "{0}".format(lista[i]["nombre"])
         if key in lista[i]:
@@ -138,7 +140,7 @@ def generar_linea(lista:list,i:int,key:str=None)->str:
 
 def generar_encabezado_x_key(lista:list,key:str=None)->str:
     lista_encabezado = []
-    if key == None:
+    if key == None and key != "estadistica" and key != "logros":
         for clave in lista[0]:
             lista_encabezado.append(clave.capitalize())
     elif key == "nombre":
