@@ -163,7 +163,7 @@ def listar_x_patron(lista:list,patron:str):
     return lista_resultado
 
 
-lista_jugadores = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\dt.json","jugadores")
+lista_jugadores = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
 lista_jugadores_deepcopy = lista_jugadores[:]
 if lista_jugadores_deepcopy != []:
     imprimir_dato("******LISTA DESCARGADA******\n")
