@@ -14,11 +14,12 @@ def imprimir_dato(string:str):
 
 
 def imprimir_menu():
-    menu = "\n1° EXAMEN PARCIAL 1° CUATRI.\n"\
+    menu = "\n1° EXAMEN PARCIAL 1° CUATRIMESTRE - DREAM TEAM\n\n"\
     "1 - Mostrar todos los jugadores del Dream Team\n"\
     "2 - Mostrar estadísticas de un jugador\n"\
     "3 - Buscar un jugador por su nombre y mostrar sus logros\n"\
     "4 - Mostrar promedio de puntos por partido de todo el Dream Team\n"\
+    "5 - Mostrar si es Miembro del Salón de la Fama del Baloncesto\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -26,10 +27,12 @@ def imprimir_menu():
 def menu_principal()->str:
     imprimir_menu()
     opcion = input("Seleccione opción: ")
-    if re.match("[0-4]$",opcion):
-        return opcion
+    if re.match("[0-9]$",opcion):
+        pass
     else:
-        print(-1)
+        print("Opción inválida. Inténtelo nuevamente")
+        opcion = -1
+    return opcion
 
 
 def continuar():
@@ -63,11 +66,11 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
             opcion_exportar = opcion
         case "3":
-            patron = seleccionar_jugador_por_nombre()
-            lista_jugador_logros = obtener_logros_por_nombre(lista,patron)
+            patron_nombre = seleccionar_jugador_por_nombre()
+            lista_jugador_logros = obtener_logros_por_nombre(lista,patron_nombre)
             if lista_jugador_logros != []:
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
-                nombre_archivo = "logros_de_jugador_{0}.csv".format(patron[:3])
+                nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
             lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_team(lista,"promedio_puntos_por_partido")
             ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
@@ -76,7 +79,9 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
             imprimir_dato("Promedio total de puntos por partido de todo el Dream Team: {0:.2f}".format(promedio_total))
         case "5":
-            pass
+            patron_nombre = seleccionar_jugador_por_nombre()
+            dato = obtener_jugador_salon_de_la_fama(lista,patron_nombre)
+            nombre_archivo = "jugador_salon_de_la_fama.csv"
         case "6":
             pass
         case "7":
@@ -157,16 +162,8 @@ def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True):
 def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int):
     if tipo_dato == "list_dict_str":
         dato = lista[i][key][0]
-    elif tipo_dato == "dict_int":
-        dato = lista[i][key]
-    elif tipo_dato == "int_float":
-        dato = lista[i]
-    elif tipo_dato == "dict_str_int":
-        dato = int(lista[i][key])
-    elif tipo_dato == "len_dict_str":
-        dato = len(lista[i][key])
-    elif tipo_dato == "len_str":
-        dato = len(lista[i])
+    elif tipo_dato == "":
+        pass
     return dato
 
 
@@ -176,6 +173,19 @@ def consultar_exportar_archivo(lista:list):
         guardar_archivo(lista[0],lista[1])
     elif re.match("^N$|[\w]",consulta):
         imprimir_dato("Se omitió creación de archivo")
+
+
+def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
+    lista_logros_jugador = obtener_logros_por_nombre(lista,pattern)
+    patron = "Salon de la Fama"
+    flag_pertenece = False
+    if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
+        flag_pertenece = True
+    if flag_pertenece == True:
+        mensaje = "{0} es Miembro del {1}".format(lista_logros_jugador[0]["nombre"],patron)
+    else:
+        mensaje = "{0} NO es Miembro del {1} del Baloncesto".format(lista_logros_jugador[0]["nombre"],patron)
+    return mensaje
 
 
 def obtener_logros_por_nombre(lista:list,pattern:str)->list:
