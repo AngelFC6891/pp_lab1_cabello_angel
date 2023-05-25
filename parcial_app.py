@@ -20,6 +20,12 @@ def imprimir_menu():
     "3 - Buscar un jugador por su nombre y mostrar sus logros\n"\
     "4 - Mostrar promedio de puntos por partido de todo el Dream Team\n"\
     "5 - Mostrar si es Miembro del Salón de la Fama del Baloncesto\n"\
+    "6 - Jugador con la mayor cantidad de rebotes totales\n"\
+    "7 - Jugador con el mayor porcentaje de tiros de campo\n"\
+    "8 - Jugador con la mayor cantidad de asistencias totales\n"\
+    "9 - \n"\
+    "10 - \n"\
+    "11 - \n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -83,11 +89,14 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = obtener_jugador_salon_de_la_fama(lista,patron_nombre)
             nombre_archivo = "jugador_salon_de_la_fama.csv"
         case "6":
-            pass
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","rebotes_totales")
+            nombre_archivo = "jugador_con_mayor_cant_rebotes_totales.csv"
         case "7":
-            pass
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","porcentaje_tiros_de_campo")
+            nombre_archivo = "jugador_con_mayor_porcentaje_tiros_de_campo.csv"
         case "8":
-            pass
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","asistencias_totales")
+            nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "9":
             pass
         case "10":
@@ -109,6 +118,22 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     if exportar == False and opcion_exportar == "2":
         consultar_exportar_archivo(lista_nombre_dato)
     return lista_nombre_dato
+
+
+def obtener_mayor_menor_x_clave_estadistica(lista:list,tipo_dato:str,key:str,max_min:str="mayor")->str:
+    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
+    ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
+    key = re.sub("_"," ",key)
+    if max_min == "mayor":
+        jugador = lista_estadisticas[len(lista_estadisticas)-1]
+    elif max_min == "menor":
+        jugador = lista_estadisticas[0]
+    if re.search(r"^porc",key) or re.search(r"^prom",key):
+        subtring = "{0} {1}".format(max_min.upper(),key)
+    else:
+        subtring = "{0} cantidad de {1}".format(max_min.upper(),key)
+    dato = "El jugador con {0} es: {1}, con: {2}".format(subtring,jugador["nombre"],jugador[re.sub(" ","_",key)])
+    return dato
 
 
 def obtener_nombre_y_todas_las_estadisticas(lista:list)->list:
@@ -162,8 +187,8 @@ def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True):
 def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int):
     if tipo_dato == "list_dict_str":
         dato = lista[i][key][0]
-    elif tipo_dato == "":
-        pass
+    elif tipo_dato == "list_dict_num":
+        dato = lista[i][key]
     return dato
 
 
