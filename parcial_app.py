@@ -18,7 +18,7 @@ def imprimir_menu():
     "1 - Mostrar todos los jugadores del Dream Team\n"\
     "2 - Mostrar estadísticas de un jugador\n"\
     "3 - Buscar un jugador por su nombre y mostrar sus logros\n"\
-    "4 - \n"\
+    "4 - Mostrar promedio de puntos por partido de todo el Dream Team\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -52,6 +52,8 @@ def lanzar_app(lista:list):
 def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     lista_nombre_dato = []
     dato = ""
+    nombre_archivo = ""
+    opcion_exportar = ""
     match opcion:
         case "1":
             dato = obtener_todos_los_jugadores_y_su_posicion(lista)
@@ -59,16 +61,20 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             i_r = seleccionar_indice_rango(lista,"i")
             dato = obtener_estadisticas_por_indice_rango(lista,i_r,"i")
             nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
-            caso = "2"
+            opcion_exportar = opcion
         case "3":
-            caso = ""
             patron = seleccionar_jugador_por_nombre()
             lista_jugador_logros = obtener_logros_por_nombre(lista,patron)
             if lista_jugador_logros != []:
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron[:3])
         case "4":
-            pass
+            lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_team(lista,"promedio_puntos_por_partido")
+            ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
+            promedio_total = calcular_promedio(lista_promedios_de_puntos_x_partido,"promedio_puntos_por_partido")
+            dato = generar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
+            nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
+            imprimir_dato("Promedio total de puntos por partido de todo el Dream Team: {0:.2f}".format(promedio_total))
         case "5":
             pass
         case "6":
@@ -95,12 +101,12 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         imprimir_dato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
-    if exportar == False and caso == "2":
-        consultar_guardar_archivo(lista_nombre_dato)
+    if exportar == False and opcion_exportar == "2":
+        consultar_exportar_archivo(lista_nombre_dato)
     return lista_nombre_dato
 
 
-def obtener_nombre_mas_estadisticas(lista:list)->list:
+def obtener_nombre_y_todas_las_estadisticas(lista:list)->list:
     lista_nombre_y_estadisticas = []
     for i in range(len(lista)):
         diccio_auxiliar = {}
@@ -111,34 +117,48 @@ def obtener_nombre_mas_estadisticas(lista:list)->list:
     return lista_nombre_y_estadisticas
 
 
-def mostrar_promedios_por_partido(lista:list):
-    pass
+def obtener_estadistica_x_key_all_team(lista:list,key:str):
+    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
+    for i in range(len(lista_estadisticas)):
+        diccio_aux = {}
+        diccio_aux["nombre"] = lista_estadisticas[i]["nombre"]
+        diccio_aux[key] = lista_estadisticas[i][key]
+        lista_estadisticas[i] = diccio_aux
+    return lista_estadisticas
 
 
-def quick_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True)->list:
-    lista_derecha = []
-    lista_izquierda = []
-    if len(lista) <= 1:
-        return lista
+def calcular_promedio(lista:list,key:str)->float:
+    contador = 0
+    acumulador = 0
+    for diccio in lista:
+        if key in diccio and (type(diccio[key]) == int or type(diccio[key]) == float):
+            acumulador += diccio[key]
+            contador += 1
+    if contador > 0:
+        promedio = acumulador / contador
     else:
-        pivot = lista[0]
-        for i in range(len(lista)-1):
-            if (flag_orden == True and retornar_tipo_dato(lista,tipo_dato,key,i+1) > pivot) or (flag_orden == False and retornar_tipo_dato(lista,tipo_dato,i+1) < pivot):
-                lista_derecha.append(retornar_tipo_dato(lista,tipo_dato,i+1))
-            elif (flag_orden == True and retornar_tipo_dato(lista,tipo_dato,i+1) < pivot) or (flag_orden == False and retornar_tipo_dato(lista,tipo_dato,i+1) > pivot):
-                lista_izquierda.append(retornar_tipo_dato(lista,tipo_dato,i+1))
-    lista_izquierda = quick_sort(lista_izquierda,flag_orden)
-    lista_izquierda.append(pivot)
-    lista_derecha = quick_sort(lista_derecha,flag_orden)
-    lista_izquierda.extend(lista_derecha)
-    return lista_izquierda
+        promedio = -1
+    return promedio
 
 
-def retornar_tipo_dato(lista:list,tipo_dato:str,i:int,key:str):
-    if tipo_dato == "dict_int":
+def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True):
+    rango = len(lista) 
+    flag_swap = True
+    while flag_swap:
+        flag_swap = False
+        rango -= 1
+        for i in range(rango):
+            if  flag_orden == False and retornar_tipo_dato(lista,tipo_dato,key,i) < retornar_tipo_dato(lista,tipo_dato,key,i+1) \
+             or flag_orden == True and retornar_tipo_dato(lista,tipo_dato,key,i) > retornar_tipo_dato(lista,tipo_dato,key,i+1):
+                lista[i],lista[i+1] = lista[i+1],lista[i]
+                flag_swap = True
+
+
+def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int):
+    if tipo_dato == "list_dict_str":
+        dato = lista[i][key][0]
+    elif tipo_dato == "dict_int":
         dato = lista[i][key]
-    elif tipo_dato == "str":
-        dato = lista[i][0]
     elif tipo_dato == "int_float":
         dato = lista[i]
     elif tipo_dato == "dict_str_int":
@@ -150,7 +170,7 @@ def retornar_tipo_dato(lista:list,tipo_dato:str,i:int,key:str):
     return dato
 
 
-def consultar_guardar_archivo(lista:list):
+def consultar_exportar_archivo(lista:list):
     consulta = input("Desea exportar los resultados a .csv (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
@@ -208,7 +228,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
 
 def obtener_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
     dato = ""
-    lista_estadisticas = obtener_nombre_mas_estadisticas(lista)
+    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
     if tipo == "r":
         lista_estadisticas = lista_estadisticas[:index_range]
     elif tipo == "i":
@@ -301,3 +321,4 @@ if lista_jugadores != []:
     lista_jugadores_deepcopy = lista_jugadores[:]
     imprimir_dato("******LISTA DESCARGADA******\n")
     lanzar_app(lista_jugadores_deepcopy)
+
