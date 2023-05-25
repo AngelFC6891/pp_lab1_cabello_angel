@@ -26,6 +26,13 @@ def imprimir_menu():
     "9 - \n"\
     "10 - \n"\
     "11 - \n"\
+    "12 - Jugador con la mayor cantidad de robos totales\n"\
+    "13 - Jugador con la mayor cantidad de bloqueos totales\n"\
+    "14 - \n"\
+    "15 - \n"\
+    "16 - Jugador con la mayor cantidad de logros obtenidos\n"\
+    "17 - \n"\
+    "18 - Jugador con la mayor cantidad de temporadas jugadas\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -33,7 +40,7 @@ def imprimir_menu():
 def menu_principal()->str:
     imprimir_menu()
     opcion = input("Seleccione opción: ")
-    if re.match("[0-9]$",opcion):
+    if re.match("[0-9]$|1[0-9]$",opcion):
         pass
     else:
         print("Opción inválida. Inténtelo nuevamente")
@@ -51,7 +58,7 @@ def lanzar_app(lista:list):
         match opcion_seleccionada:
             case "0":
                 break
-            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9":
+            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18":
                 ejecutar_match_anidado(lista,opcion_seleccionada)
             case "20":
                 exportar_csv(lista)
@@ -73,7 +80,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             opcion_exportar = opcion
         case "3":
             patron_nombre = seleccionar_jugador_por_nombre()
-            lista_jugador_logros = obtener_logros_por_nombre(lista,patron_nombre)
+            lista_jugador_logros = obtener_nombre_y_logros(lista,patron_nombre)
             if lista_jugador_logros != []:
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
@@ -104,13 +111,23 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         case "11":
             pass
         case "12":
-            pass
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","robos_totales")
+            nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "13":
-            pass
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","bloqueos_totales")
+            nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "14":
             pass
         case "15":
             pass
+        case "16":
+            dato = mostrar_jugador_con_mayor_cant_logros(lista)
+            nombre_archivo = "jugador_con_mayor_cant_logros.csv"
+        case "17":
+            pass
+        case "18":
+            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
+            nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
     if dato != "":
         imprimir_dato(dato)
         lista_nombre_dato.append(nombre_archivo)
@@ -120,14 +137,30 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
+def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
+    lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
+    ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
+    dato = "El jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
+        lista_ordenada_x_cant_logros[ultimo_indice]["nombre"],
+        len(lista_ordenada_x_cant_logros[ultimo_indice]["logros"]),
+        "\n".join(lista_ordenada_x_cant_logros[ultimo_indice]["logros"][:]))
+    return dato
+
+
+def ordenar_x_cantidad_de_logros(lista:list)->list:
+    lista_copia = lista[:]
+    ordenar_bubble_sort(lista_copia,"list_dict_len_key","logros")
+    return lista_copia
+
+
 def obtener_mayor_menor_x_clave_estadistica(lista:list,tipo_dato:str,key:str,max_min:str="mayor")->str:
     lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
     ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
-    key = re.sub("_"," ",key)
     if max_min == "mayor":
         jugador = lista_estadisticas[len(lista_estadisticas)-1]
     elif max_min == "menor":
         jugador = lista_estadisticas[0]
+    key = re.sub("_"," ",key)
     if re.search(r"^porc",key) or re.search(r"^prom",key):
         subtring = "{0} {1}".format(max_min.upper(),key)
     else:
@@ -189,6 +222,8 @@ def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int):
         dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num":
         dato = lista[i][key]
+    elif tipo_dato == "list_dict_len_key":
+        dato = len(lista[i][key])
     return dato
 
 
@@ -201,7 +236,7 @@ def consultar_exportar_archivo(lista:list):
 
 
 def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
-    lista_logros_jugador = obtener_logros_por_nombre(lista,pattern)
+    lista_logros_jugador = obtener_nombre_y_logros(lista,pattern)
     patron = "Salon de la Fama"
     flag_pertenece = False
     if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
@@ -213,18 +248,21 @@ def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     return mensaje
 
 
-def obtener_logros_por_nombre(lista:list,pattern:str)->list:
+def obtener_nombre_y_logros(lista:list,pattern:str=None)->list:
     lista_retorno = []
-    if pattern != "":
-        for i in range(len(lista)):
-            diccio_nombre_logros = {}
-            if re.search(r"{0}".format(pattern),lista[i]["nombre"]) or\
-               re.search(r"{0}".format(pattern),lista[i]["nombre"].lower()):
-                diccio_nombre_logros["nombre"] = lista[i]["nombre"]
-                diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
-                lista_retorno.append(diccio_nombre_logros)
-        if lista_retorno == []:
-            imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
+    for i in range(len(lista)):
+        diccio_nombre_logros = {}
+        if pattern != None and re.search(r"{0}".format(pattern),lista[i]["nombre"]) or\
+            re.search(r"{0}".format(pattern),lista[i]["nombre"].lower()):
+            diccio_nombre_logros["nombre"] = lista[i]["nombre"]
+            diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
+            lista_retorno.append(diccio_nombre_logros)
+        elif pattern == None:
+            diccio_nombre_logros["nombre"] = lista[i]["nombre"]
+            diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
+            lista_retorno.append(diccio_nombre_logros)
+    if lista_retorno == []:
+        imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
     return lista_retorno
 
 
@@ -351,7 +389,7 @@ lista_jugadores = []
 try:
     lista_jugadores = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
 except FileNotFoundError:
-    print("\nError: No se encontró el archivo CSV en la ruta especificada\n")
+    print("\nError: No se encontró el archivo .json en la ruta especificada\n")
 if lista_jugadores != []:
     lista_jugadores_deepcopy = lista_jugadores[:]
     imprimir_dato("******LISTA DESCARGADA******\n")
