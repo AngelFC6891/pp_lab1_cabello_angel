@@ -54,16 +54,16 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     dato = ""
     match opcion:
         case "1":
-            dato = mostrar_todos_los_jugadores_y_su_posicion(lista)
+            dato = obtener_todos_los_jugadores_y_su_posicion(lista)
         case "2":
             i_r = seleccionar_indice_rango(lista,"i")
-            dato = mostrar_estadisticas_por_indice_rango(lista,i_r,"i")
+            dato = obtener_estadisticas_por_indice_rango(lista,i_r,"i")
             nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
             caso = "2"
         case "3":
             caso = ""
             patron = seleccionar_jugador_por_nombre()
-            lista_jugador_logros = mostrar_logros_por_nombre(lista,patron)
+            lista_jugador_logros = obtener_logros_por_nombre(lista,patron)
             if lista_jugador_logros != []:
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron[:3])
@@ -100,15 +100,65 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
+def obtener_nombre_mas_estadisticas(lista:list)->list:
+    lista_nombre_y_estadisticas = []
+    for i in range(len(lista)):
+        diccio_auxiliar = {}
+        diccio_auxiliar["nombre"] = lista[i]["nombre"]
+        for key in lista[i]["estadisticas"]:
+            diccio_auxiliar[key] = lista[i]["estadisticas"][key]
+        lista_nombre_y_estadisticas.append(diccio_auxiliar)
+    return lista_nombre_y_estadisticas
+
+
+def mostrar_promedios_por_partido(lista:list):
+    pass
+
+
+def quick_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True)->list:
+    lista_derecha = []
+    lista_izquierda = []
+    if len(lista) <= 1:
+        return lista
+    else:
+        pivot = lista[0]
+        for i in range(len(lista)-1):
+            if (flag_orden == True and retornar_tipo_dato(lista,tipo_dato,key,i+1) > pivot) or (flag_orden == False and retornar_tipo_dato(lista,tipo_dato,i+1) < pivot):
+                lista_derecha.append(retornar_tipo_dato(lista,tipo_dato,i+1))
+            elif (flag_orden == True and retornar_tipo_dato(lista,tipo_dato,i+1) < pivot) or (flag_orden == False and retornar_tipo_dato(lista,tipo_dato,i+1) > pivot):
+                lista_izquierda.append(retornar_tipo_dato(lista,tipo_dato,i+1))
+    lista_izquierda = quick_sort(lista_izquierda,flag_orden)
+    lista_izquierda.append(pivot)
+    lista_derecha = quick_sort(lista_derecha,flag_orden)
+    lista_izquierda.extend(lista_derecha)
+    return lista_izquierda
+
+
+def retornar_tipo_dato(lista:list,tipo_dato:str,i:int,key:str):
+    if tipo_dato == "dict_int":
+        dato = lista[i][key]
+    elif tipo_dato == "str":
+        dato = lista[i][0]
+    elif tipo_dato == "int_float":
+        dato = lista[i]
+    elif tipo_dato == "dict_str_int":
+        dato = int(lista[i][key])
+    elif tipo_dato == "len_dict_str":
+        dato = len(lista[i][key])
+    elif tipo_dato == "len_str":
+        dato = len(lista[i])
+    return dato
+
+
 def consultar_guardar_archivo(lista:list):
-    consulta = input("Desea exportar los resultados a csv (S/N): ")
+    consulta = input("Desea exportar los resultados a .csv (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
     elif re.match("^N$|[\w]",consulta):
         imprimir_dato("Se omitió creación de archivo")
 
 
-def mostrar_logros_por_nombre(lista:list,pattern:str)->list:
+def obtener_logros_por_nombre(lista:list,pattern:str)->list:
     lista_retorno = []
     if pattern != "":
         for i in range(len(lista)):
@@ -133,7 +183,7 @@ def seleccionar_jugador_por_nombre()->str:
     return patron
 
 
-def mostrar_todos_los_jugadores_y_su_posicion(lista:list)->str:
+def obtener_todos_los_jugadores_y_su_posicion(lista:list)->str:
     dato = generar_data_hasta_clave_rango(lista,"posicion")
     lista_lineas = re.split("\n",dato)
     lista_datos = []
@@ -156,25 +206,14 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
     return indice_rango
 
 
-def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
+def obtener_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
     dato = ""
-    lista_estadisticas = []
+    lista_estadisticas = obtener_nombre_mas_estadisticas(lista)
     if tipo == "r":
-        for i in range(index_range):
-            lista_estadisticas.append(lista[i]["estadisticas"])
+        lista_estadisticas = lista_estadisticas[:index_range]
     elif tipo == "i":
-        lista_estadisticas.append(lista[index_range-1]["estadisticas"])
-    nombres = generar_data_hasta_clave_rango(lista,"nombre",index_range)
-    estadisticas = generar_data_hasta_clave_rango(lista_estadisticas)
-    lista_nombres = re.split("\n",nombres)
-    lista_estadisticas_aux = re.split("\n",estadisticas)
-    if tipo == "i":
-        lista_nombres[1:len(lista_nombres)-1] = []
-    lista_nombres_estadisticas = []
-    if len(lista_nombres) == len(lista_estadisticas_aux):
-        for i in range(len(lista_nombres)):
-            lista_nombres_estadisticas.append(f"{lista_nombres[i]},{lista_estadisticas_aux[i]}")
-        dato = "\n".join(lista_nombres_estadisticas[:])
+        lista_estadisticas = lista_estadisticas[index_range-1:][0:1]
+    dato = generar_data_hasta_clave_rango(lista_estadisticas)
     return dato
 
 
@@ -255,7 +294,7 @@ def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
 
 lista_jugadores = []
 try:
-    lista_jugadores = leer_archivo("D:\PROGLAB\Ejercicios_PARCIAL_1°_CUATRI_pendrive\pp_lab1_cabello_angel\dt.json","jugadores")
+    lista_jugadores = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
 except FileNotFoundError:
     print("\nError: No se encontró el archivo CSV en la ruta especificada\n")
 if lista_jugadores != []:
