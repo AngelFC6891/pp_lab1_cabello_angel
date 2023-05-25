@@ -23,7 +23,7 @@ def imprimir_menu():
     "6 - Jugador con la mayor cantidad de rebotes totales\n"\
     "7 - Jugador con el mayor porcentaje de tiros de campo\n"\
     "8 - Jugador con la mayor cantidad de asistencias totales\n"\
-    "9 - \n"\
+    "9 - Mostrar los jugadores que han promediado más puntos por partido que valor ingresado\n"\
     "10 - \n"\
     "11 - \n"\
     "12 - Jugador con la mayor cantidad de robos totales\n"\
@@ -102,7 +102,11 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","asistencias_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "9":
-            pass
+            valor = ingresar_y_validar_valor()
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"promedio_puntos_por_partido",True,"der")
+            if lista_promedios != []:
+                dato = generar_data_hasta_clave_rango(lista_promedios)
+                nombre_archivo = "promedios_puntos_por_partido_mayores_a_{0}".format(valor)
         case "10":
             pass
         case "11":
@@ -122,7 +126,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
         case "17":
             dato = mostrar_promedios_de_puntos_x_partido(lista,True)
-            nombre_archivo = "promedio_puntos_por_partido_all_team_con_exclusion.csv"
+            nombre_archivo = "promedio_puntos_por_partido_con_exclusion.csv"
         case "18":
             dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
             nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
@@ -135,9 +139,51 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
+def ingresar_y_validar_valor()->float:
+    valor = input("Ingrese un valor entero mayor que 0: ")
+    if re.match(r"[1-9]|[1-9]+\.[0-9][0-9]|[1-9][0-9]+|[1-9][0-9]+\.[0-9][0-9]",valor):
+        valor = float(valor)
+    else:
+        imprimir_dato("Valor no válido. Inténtelo nuevamente")
+        valor = -1
+    return valor
+
+
+def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,valor:float,key:str,menor_a_mayor:bool=True,izq_o_der:str="der")->list:
+    lista_retorno = []
+    if valor != -1:
+        lista_estadisticas = obtener_estadistica_x_key_all_team(lista,key)
+        ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key)
+        maximo = lista_estadisticas[len(lista_estadisticas)-1][key]
+        if valor < maximo:
+            lista_retorno = ordenar_quick_sort_reducida(lista_estadisticas,valor,key,menor_a_mayor,izq_o_der)
+        else:
+            imprimir_dato("El valor ingresado supera el máximo {0}. Inténtelo nuevamente".format(maximo))
+    return lista_retorno
+
+
+def ordenar_quick_sort_reducida(lista:list,valor:int,key:str,menor_a_mayor:bool=True,izq_o_der:str="der")->list:
+    lista_retorno = []
+    lista_izquierda = []
+    lista_derecha = []
+    pivot = valor
+    for diccio in lista:
+        if (menor_a_mayor == True and diccio[key] > pivot) or\
+            (menor_a_mayor == False and diccio[key] < pivot):
+            lista_derecha.append(diccio)
+        elif (menor_a_mayor == True and diccio[key] < pivot) or\
+                (menor_a_mayor == False and diccio[key] > pivot):
+            lista_izquierda.append(diccio)
+    if izq_o_der == "izq":
+        lista_retorno.extend(lista_izquierda)
+    elif izq_o_der == "der":
+        lista_retorno.extend(lista_derecha)
+    return lista_retorno
+
+
 def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
-    ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
+    ultimo_indice = len(lista_ordenada_x_cant_logros)-1
     dato = "\nEl jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
         lista_ordenada_x_cant_logros[ultimo_indice]["nombre"],
         len(lista_ordenada_x_cant_logros[ultimo_indice]["logros"]),
@@ -411,6 +457,6 @@ except FileNotFoundError:
     print("\nError: No se encontró el archivo .json en la ruta especificada\n")
 if lista_jugadores != []:
     lista_jugadores_deepcopy = lista_jugadores[:]
-    imprimir_dato("******LISTA DESCARGADA******\n")
+    imprimir_dato("******LISTA CARGADA******\n")
     lanzar_app(lista_jugadores_deepcopy)
 
