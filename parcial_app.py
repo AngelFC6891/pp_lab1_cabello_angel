@@ -104,6 +104,8 @@ def consultar_guardar_archivo(lista:list):
     consulta = input("Desea exportar los resultados a csv (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
+    elif re.match("^N$|[\w]",consulta):
+        imprimir_dato("Se omitió creación de archivo")
 
 
 def mostrar_logros_por_nombre(lista:list,pattern:str)->list:
