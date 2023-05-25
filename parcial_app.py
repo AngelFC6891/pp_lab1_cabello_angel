@@ -31,7 +31,8 @@ def imprimir_menu():
     "14 - \n"\
     "15 - \n"\
     "16 - Jugador con la mayor cantidad de logros obtenidos\n"\
-    "17 - \n"\
+    "17 - Mostrar el promedio de puntos por partido del equipo excluyendo\n"\
+    "     al jugador con la menor cantidad de puntos por partido\n"\
     "18 - Jugador con la mayor cantidad de temporadas jugadas\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
@@ -80,17 +81,13 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             opcion_exportar = opcion
         case "3":
             patron_nombre = seleccionar_jugador_por_nombre()
-            lista_jugador_logros = obtener_nombre_y_logros(lista,patron_nombre)
+            lista_jugador_logros = obtener_nombre_y_logros_x_jugador(lista,patron_nombre)
             if lista_jugador_logros != []:
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
-            lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_team(lista,"promedio_puntos_por_partido")
-            ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
-            promedio_total = calcular_promedio(lista_promedios_de_puntos_x_partido,"promedio_puntos_por_partido")
-            dato = generar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
+            dato = mostrar_promedios_de_puntos_x_partido(lista)
             nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
-            imprimir_dato("Promedio total de puntos por partido de todo el Dream Team: {0:.2f}".format(promedio_total))
         case "5":
             patron_nombre = seleccionar_jugador_por_nombre()
             dato = obtener_jugador_salon_de_la_fama(lista,patron_nombre)
@@ -124,7 +121,8 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = mostrar_jugador_con_mayor_cant_logros(lista)
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
         case "17":
-            pass
+            dato = mostrar_promedios_de_puntos_x_partido(lista,True)
+            nombre_archivo = "promedio_puntos_por_partido_all_team_con_exclusion.csv"
         case "18":
             dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
             nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
@@ -140,7 +138,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
 def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
     ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
-    dato = "El jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
+    dato = "\nEl jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
         lista_ordenada_x_cant_logros[ultimo_indice]["nombre"],
         len(lista_ordenada_x_cant_logros[ultimo_indice]["logros"]),
         "\n".join(lista_ordenada_x_cant_logros[ultimo_indice]["logros"][:]))
@@ -180,7 +178,22 @@ def obtener_nombre_y_todas_las_estadisticas(lista:list)->list:
     return lista_nombre_y_estadisticas
 
 
-def obtener_estadistica_x_key_all_team(lista:list,key:str):
+def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
+    lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_team(lista,"promedio_puntos_por_partido")
+    if exclusion == True:
+        ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_num","promedio_puntos_por_partido")
+        diccio_excluido = lista_promedios_de_puntos_x_partido[0]
+        lista_promedios_de_puntos_x_partido.pop(0)
+        imprimir_dato("Excluido: {},{}".format(diccio_excluido["nombre"],diccio_excluido["promedio_puntos_por_partido"]))
+    else:
+        ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
+    promedio_total = calcular_promedio(lista_promedios_de_puntos_x_partido,"promedio_puntos_por_partido")
+    dato = generar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
+    dato = "Promedio total de puntos por partido de todo el Dream Team: {0:.2f}\n{1}".format(promedio_total,dato)
+    return dato
+
+
+def obtener_estadistica_x_key_all_team(lista:list,key:str)->list:
     lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
     for i in range(len(lista_estadisticas)):
         diccio_aux = {}
@@ -204,7 +217,7 @@ def calcular_promedio(lista:list,key:str)->float:
     return promedio
 
 
-def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True):
+def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True)->None:
     rango = len(lista) 
     flag_swap = True
     while flag_swap:
@@ -217,7 +230,7 @@ def ordenar_bubble_sort(lista:list,tipo_dato:str,key:str,flag_orden:bool=True):
                 flag_swap = True
 
 
-def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int):
+def retornar_tipo_dato(lista:list,tipo_dato:str,key:str,i:int)->None:
     if tipo_dato == "list_dict_str":
         dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num":
@@ -236,7 +249,7 @@ def consultar_exportar_archivo(lista:list):
 
 
 def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
-    lista_logros_jugador = obtener_nombre_y_logros(lista,pattern)
+    lista_logros_jugador = obtener_nombre_y_logros_all_dream_team(lista,pattern)
     patron = "Salon de la Fama"
     flag_pertenece = False
     if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
@@ -248,19 +261,25 @@ def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     return mensaje
 
 
-def obtener_nombre_y_logros(lista:list,pattern:str=None)->list:
+def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
+    lista_nombre_logros = obtener_nombre_y_logros_all_dream_team(lista)
+    lista_retorno = []
+    for diccio in lista_nombre_logros:
+        if re.search(r"{0}".format(pattern),diccio["nombre"]) or\
+            re.search(r"{0}".format(pattern),diccio["nombre"].lower()):
+            lista_retorno.append(diccio)
+        else:
+            imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
+    return lista_retorno
+
+
+def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
     lista_retorno = []
     for i in range(len(lista)):
         diccio_nombre_logros = {}
-        if pattern != None and re.search(r"{0}".format(pattern),lista[i]["nombre"]) or\
-            re.search(r"{0}".format(pattern),lista[i]["nombre"].lower()):
-            diccio_nombre_logros["nombre"] = lista[i]["nombre"]
-            diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
-            lista_retorno.append(diccio_nombre_logros)
-        elif pattern == None:
-            diccio_nombre_logros["nombre"] = lista[i]["nombre"]
-            diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
-            lista_retorno.append(diccio_nombre_logros)
+        diccio_nombre_logros["nombre"] = lista[i]["nombre"]
+        diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
+        lista_retorno.append(diccio_nombre_logros)
     if lista_retorno == []:
         imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
     return lista_retorno
@@ -310,7 +329,7 @@ def obtener_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->
     return dato
 
 
-def exportar_csv(lista:list):
+def exportar_csv(lista:list)->None:
     opcion = seleccionar_opcion_a_guardar()
     if opcion != "-1":
         lista_name_data = ejecutar_match_anidado(lista,opcion,True)
