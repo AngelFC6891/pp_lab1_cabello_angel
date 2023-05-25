@@ -36,8 +36,11 @@ def imprimir_menu():
     "15 - Mostrar el promedio de puntos por partido del equipo excluyendo\n"\
     "     al jugador con la menor cantidad de puntos por partido\n"\
     "16 - Jugador con la mayor cantidad de logros obtenidos\n"\
-    "17 - \n"\
+    "17 - Mostrar los jugadores que hayan tenido un porcentaje de tiros triples\n"\
+         "superior al valor ingresado\n"\
     "18 - Jugador con la mayor cantidad de temporadas jugadas\n"\
+    "19 - Mostrar los jugadores, ordenados por posición en la cancha, que hayan\n"\
+         "tenido un porcentaje de tiros de campo superior al valor ingresado\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -63,7 +66,8 @@ def lanzar_app(lista:list):
         match opcion_seleccionada:
             case "0":
                 break
-            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18":
+            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" |\
+                 "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19":
                 ejecutar_match_anidado(lista,opcion_seleccionada)
             case "20":
                 exportar_csv(lista)
@@ -77,16 +81,17 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     opcion_exportar = ""
     match opcion:
         case "1":
-            dato = obtener_todos_los_jugadores_y_su_posicion(lista)
+            dato = mostrar_todos_los_jugadores_y_su_posicion(lista)
         case "2":
             i_r = seleccionar_indice_rango(lista,"i")
-            dato = obtener_estadisticas_por_indice_rango(lista,i_r,"i")
-            nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
-            opcion_exportar = opcion
+            if i_r != -1:
+                dato = mostrar_estadisticas_por_indice_rango(lista,i_r,"i")
+                nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
+                opcion_exportar = opcion
         case "3":
             patron_nombre = seleccionar_jugador_por_nombre()
-            lista_jugador_logros = obtener_nombre_y_logros_x_jugador(lista,patron_nombre)
-            if lista_jugador_logros != []:
+            if patron_nombre != "":
+                lista_jugador_logros = obtener_nombre_y_logros_x_jugador(lista,patron_nombre)
                 dato = generar_data_hasta_clave_rango(lista_jugador_logros)
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
@@ -94,44 +99,60 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
         case "5":
             patron_nombre = seleccionar_jugador_por_nombre()
-            dato = obtener_jugador_salon_de_la_fama(lista,patron_nombre)
+            dato = mostrar_jugador_salon_de_la_fama(lista,patron_nombre)
             nombre_archivo = "jugador_salon_de_la_fama.csv"
         case "6":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","rebotes_totales")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","rebotes_totales")
             nombre_archivo = "jugador_con_mayor_cant_rebotes_totales.csv"
         case "7":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","porcentaje_tiros_de_campo")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","porcentaje_tiros_de_campo")
             nombre_archivo = "jugador_con_mayor_porcentaje_tiros_de_campo.csv"
         case "8":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","asistencias_totales")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","asistencias_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "9":
             valor = ingresar_y_validar_valor()
-            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"promedio_puntos_por_partido",True,"der")
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
+                                                                                        valor,
+                                                                                        "promedio_puntos_por_partido",
+                                                                                        True,
+                                                                                        "der")
             if lista_promedios != []:
                 dato = generar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_puntos_por_partido_mayores_a_{0}.csv".format(valor)
         case "10":
             valor = ingresar_y_validar_valor()
-            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"rebotes_totales",True,"der")
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
+                                                                                        valor,
+                                                                                        "rebotes_totales",
+                                                                                        True,
+                                                                                        "der")
             if lista_promedios != []:
                 dato = generar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_rebotes_totales_mayores_a_{0}.csv".format(valor)
         case "11":
             valor = ingresar_y_validar_valor()
-            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"asistencias_totales",True,"der")
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
+                                                                                        valor,
+                                                                                        "asistencias_totales",
+                                                                                        True,
+                                                                                        "der")
             if lista_promedios != []:
                 dato = generar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_asistencias_totales_mayores_a_{0}.csv".format(valor)
         case "12":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","robos_totales")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","robos_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "13":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","bloqueos_totales")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","bloqueos_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "14":
             valor = ingresar_y_validar_valor()
-            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"porcentaje_tiros_libres",True,"der")
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
+                                                                                        valor,
+                                                                                        "porcentaje_tiros_libres",
+                                                                                        True,
+                                                                                        "der")
             if lista_promedios != []:
                 dato = generar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_porcentaje_tiros_libres_mayor_a_{0}.csv".format(valor)
@@ -143,15 +164,34 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
         case "17":
             valor = ingresar_y_validar_valor()
-            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,valor,"porcentaje_tiros_triples",True,"der")
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
+                                                                                        valor,
+                                                                                        "porcentaje_tiros_triples",
+                                                                                        True,
+                                                                                        "der")
             if lista_promedios != []:
                 dato = generar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(valor)
         case "18":
-            dato = obtener_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
+            dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
             nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
         case "19":
-            pass
+            valor = ingresar_y_validar_valor()
+            lista_auxiliar = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista,
+                                                                                    "posicion",
+                                                                                    "porcentaje_tiros_de_campo",
+                                                                                    "list_dict_str",
+                                                                                    "list_dict_num",
+                                                                                    True,
+                                                                                    True)
+            lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista_auxiliar,
+                                                                                        valor,
+                                                                                        "porcentaje_tiros_de_campo",
+                                                                                        True,
+                                                                                        "der")
+            if lista_promedios != []:
+                dato = generar_data_hasta_clave_rango(lista_promedios)
+                nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(valor)
     if dato != "":
         imprimir_dato(dato)
         lista_nombre_dato.append(nombre_archivo)
@@ -161,10 +201,27 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
-# def ordenar_jugadores_por_doble_key(lista:list,key_uno:str,key_dos:str,tipo_dato_uno:str,tipo_dato_dos:str,flag_uno:bool,flag_dos:bool):
-#     lista_ordenada_key_uno = ordenar_bubble_sort(lista,tipo_dato_uno,key_uno,flag_uno)
-#     lista_ordenada_key_dos = ordenar_bubble_sort(lista_ordenada_key_uno,tipo_dato_dos,key_dos,flag_dos)
-#     return lista_ordenada_key_dos
+def obtener_jugadores_por_key_jugador_y_key_estadistica(lista:list,key:str,key_estadistica:str)->list:
+    lista_retorno = []
+    for i in range(len(lista)):
+        diccio_auxiliar = {}
+        diccio_auxiliar["nombre"] = lista[i]["nombre"]
+        diccio_auxiliar[key] = lista[i][key]
+        diccio_auxiliar[key_estadistica] = lista[i]["estadistica"][key_estadistica]
+        lista_retorno.append(diccio_auxiliar)
+    return lista_retorno
+
+
+def ordenar_jugadores_por_key_estadistica_y_key(lista:list,key_uno:str,key_dos:str,tipo_dato_uno:str,tipo_dato_dos:str,flag_uno:bool,flag_dos:bool):
+    lista_ordenada_key_uno = ordenar_bubble_sort(lista,tipo_dato_uno,key_uno,flag_uno)
+    lista_ordenada_key_dos = ordenar_bubble_sort(lista_ordenada_key_uno,tipo_dato_dos,key_dos,flag_dos)
+    return lista_ordenada_key_dos
+
+
+def obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista:list,key_uno:str,key_dos:str,tipo_dato_uno:str,tipo_dato_dos:str,flag_uno:bool,flag_dos:bool)->list:
+    lista_jugadores = obtener_jugadores_por_key_jugador_y_key_estadistica(lista,key_uno,key_dos)
+    lista_ordenada = ordenar_jugadores_por_key_estadistica_y_key(lista_jugadores,key_dos,key_uno,tipo_dato_dos,tipo_dato_uno,flag_dos,flag_uno)
+    return lista_ordenada
 
 
 def ingresar_y_validar_valor()->float:
@@ -225,7 +282,7 @@ def ordenar_x_cantidad_de_logros(lista:list)->list:
     return lista_copia
 
 
-def obtener_mayor_menor_x_clave_estadistica(lista:list,tipo_dato:str,key:str,max_min:str="mayor")->str:
+def mostrar_mayor_menor_x_clave_estadistica(lista:list,tipo_dato:str,key:str,max_min:str="mayor")->str:
     lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
     ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
     if max_min == "mayor":
@@ -322,7 +379,7 @@ def consultar_exportar_archivo(lista:list):
         imprimir_dato("Se omitió creación de archivo")
 
 
-def obtener_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
+def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     lista_logros_jugador = obtener_nombre_y_logros_all_dream_team(lista,pattern)
     patron = "Salon de la Fama"
     flag_pertenece = False
@@ -342,8 +399,8 @@ def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
         if re.search(r"{0}".format(pattern),diccio["nombre"]) or\
             re.search(r"{0}".format(pattern),diccio["nombre"].lower()):
             lista_retorno.append(diccio)
-        else:
-            imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
+    if lista_retorno == []:
+        imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
     return lista_retorno
 
 
@@ -369,7 +426,7 @@ def seleccionar_jugador_por_nombre()->str:
     return patron
 
 
-def obtener_todos_los_jugadores_y_su_posicion(lista:list)->str:
+def mostrar_todos_los_jugadores_y_su_posicion(lista:list)->str:
     dato = generar_data_hasta_clave_rango(lista,"posicion")
     lista_lineas = re.split("\n",dato)
     lista_datos = []
@@ -392,7 +449,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
     return indice_rango
 
 
-def obtener_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
+def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
     dato = ""
     lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
     if tipo == "r":
