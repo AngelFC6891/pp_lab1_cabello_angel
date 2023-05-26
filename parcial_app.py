@@ -82,13 +82,15 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     dato = ""
     nombre_archivo = ""
     opcion_exportar = ""
+    imprimir_con_formato = False
     match opcion:
         case "1":
-            dato = mostrar_todos_los_jugadores_y_su_posicion(lista)
+            dato = mostrar_data_hasta_clave_rango(lista,"posicion")
         case "2":
             i_r = seleccionar_indice_rango(lista,"i")
             if i_r != -1:
                 dato = mostrar_estadisticas_por_indice_rango(lista,i_r,"i")
+                imprimir_con_formato = consultar_imprimir_con_formato()
                 nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
                 opcion_exportar = opcion
         case "3":
@@ -96,6 +98,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             if patron_nombre != "":
                 lista_jugador_logros = obtener_nombre_y_logros_x_jugador(lista,patron_nombre)
                 dato = mostrar_data_hasta_clave_rango(lista_jugador_logros)
+                imprimir_con_formato = consultar_imprimir_con_formato()
                 nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
             dato = mostrar_promedios_de_puntos_x_partido(lista)
@@ -204,7 +207,10 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             opcion_exportar = opcion
 
     if dato != "":
-        imprimir_dato(dato)
+        if imprimir_con_formato == False:
+            imprimir_dato(dato)
+        else:
+            imprimir_dato_con_formato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
     if exportar == False and opcion_exportar == "2" or opcion_exportar == "20":
@@ -212,8 +218,31 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
-def inprimir_dato_con_formato(string:str)->str:
-    pass
+def imprimir_dato_con_formato(string:str)->str:
+    lista_lineas = re.split("\n",string)
+    lista_encabezados = re.split(",",lista_lineas[0])
+    dato_retorno = ""
+    lista_datos_formateados = []
+    for i in range(1,len(lista_lineas)):
+        lista_datos = re.split(",",lista_lineas[i])
+        dato_formateado = ""
+        for j in range(len(lista_datos)):
+            dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
+            dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
+        lista_datos_formateados.append(dato_formateado)
+    dato_retorno = "\n".join(lista_datos_formateados[:])
+    imprimir_dato(dato_retorno)
+
+
+def consultar_imprimir_con_formato()->bool:
+    consulta = input("Desea desea imprimir datos con formato? (S/N): ")
+    flag_consulta = True
+    if re.match("^S$",consulta):
+        pass
+    else:
+        imprimir_dato("Se omitió opción de imprimir datos con formato\n")
+        flag_consulta = False
+    return flag_consulta
 
 
 def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
@@ -314,7 +343,7 @@ def ordenar_quick_sort_reducida(lista:list,
 
 def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
-    ultimo_indice = len(lista_ordenada_x_cant_logros)-1
+    ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
     dato = "\nEl jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
         lista_ordenada_x_cant_logros[ultimo_indice]["nombre"],
         len(lista_ordenada_x_cant_logros[ultimo_indice]["logros"]),
@@ -434,10 +463,10 @@ def retornar_tipo_dato(lista:list,
 
 
 def consultar_exportar_archivo(lista:list):
-    consulta = input("Desea exportar los resultados a .csv (S/N): ")
+    consulta = input("Desea exportar los resultados a .csv? (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
-    elif re.match("^N$|[\w]",consulta):
+    else:
         imprimir_dato("Se omitió creación de archivo")
 
 
@@ -473,7 +502,7 @@ def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
     for i in range(len(lista)):
         diccio_nombre_logros = {}
         diccio_nombre_logros["nombre"] = lista[i]["nombre"]
-        diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
+        diccio_nombre_logros["logros"] = " - ".join(lista[i]["logros"][:])
         lista_retorno.append(diccio_nombre_logros)
     return lista_retorno
 
@@ -486,16 +515,6 @@ def seleccionar_jugador_por_nombre()->str:
     else:
         imprimir_dato("Nombre inválido. Inténtelo nuevamente")
     return patron
-
-
-def mostrar_todos_los_jugadores_y_su_posicion(lista:list)->str:
-    dato = mostrar_data_hasta_clave_rango(lista,"posicion")
-    lista_lineas = re.split("\n",dato)
-    lista_datos = []
-    for linea in lista_lineas:
-        lista_datos.append(re.sub(","," - ",linea))
-    dato = "\n".join(lista_datos[:])
-    return dato
 
 
 def seleccionar_indice_rango(lista:list,tipo:str)->int:
@@ -564,12 +583,16 @@ def guardar_archivo(name_file:str,new_data:str)->bool:
 
 def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->str:
     '''
-    Parámetros: lista de diccionarios (necesario), clave del diccionario (opcional)
-    Retorno: string de valores de claves\\
-    Función: recibe la lista, la itera y toma de cada diccionario los valores de\\
-    todas sus claves y las concatena en un solo string usando una ',' (coma)\\
-    como separador. El parámetro opcional permite tomar los valores claves\\
-    desde el primero hasta el valor indicado
+    Parámetros: lista de diccionarios (necesario), clave de diccionario (opcional),\\
+    un rango de iteración tipo entero (opcional)
+    Retorno: string concatenado\\
+    Función: recibe la lista, genera un encabezado con todas las claves del primer\\
+    diccionario, luego itera la lista y genera un string concatenado separado por\\
+    un salto de línea. Cada linea contiene los valores de todas las claves de cada\\
+    diccionario separados por una ',' (coma). Por defecto, la función itera todos los\\
+    diccionarios de la lista y todas las claves dentro de cada uno. Caso contrario,\\
+    va a iterar hasta el indice o clave que se le indique a través de los parámetros\\
+    opcionales 'rango' y 'clave' respectivamente.
     '''
     linea = ""
     if rango == None:
