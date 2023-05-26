@@ -106,6 +106,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     match opcion:
         case "1":
             dato = mostrar_data_hasta_clave_rango(lista,"posicion")
+            imprimir_con_formato = consultar_imprimir_con_formato()
         case "2":
             i_r = seleccionar_indice_rango(lista,"i")
             if i_r != -1:
@@ -219,8 +220,10 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                                                                                         "list_dict_str",
                                                                                         True,
                                                                                         True)
-                dato = mostrar_data_hasta_clave_rango(lista_reordenada)
-                nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(valor)
+                if lista_promedios != []:
+                    dato = mostrar_data_hasta_clave_rango(lista_reordenada)
+                    imprimir_con_formato = consultar_imprimir_con_formato()
+                    nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(valor)
         case "20":
             lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista)
             dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
@@ -259,10 +262,11 @@ def imprimir_dato_con_formato(string:str)->str:
     lista_datos_formateados = []
     for i in range(1,len(lista_lineas)):
         lista_datos = re.split(",",lista_lineas[i])
-        dato_formateado = ""
+        dato_formateado = "\n"
         for j in range(len(lista_datos)):
             dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
+            if j != len(lista_datos) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
+            else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
         lista_datos_formateados.append(dato_formateado)
     dato_retorno = "\n".join(lista_datos_formateados[:])
     imprimir_dato(dato_retorno)
@@ -548,9 +552,14 @@ def retornar_tipo_dato(lista:list,
                        key:str,
                        i:int)->None:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un string 'key'\\
+    (necesario) y un valor entero tipo entero (necesario)
+    Retorno: una estructura sintáctica que representa un valor determinado (string, int o float)
+    Función: define una estructura sintáctica representativa de un valor determinado de acuerdo\\
+    al string 'tipo_dato'. Los valores que toma este último son también representativos del tipo de\\
+    estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde la\\
+    clave del diccioario es un string. Esta función solo puede ser usada en iteraciones de for, pues\\
+    el último parámetro necesario es el índice 'i' de la lista.
     '''
     if tipo_dato == "list_dict_str":
         dato = lista[i][key][0]
@@ -563,9 +572,12 @@ def retornar_tipo_dato(lista:list,
 
 def consultar_exportar_archivo(lista:list)->None:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de dos strings (necesaria)
+    Retorno: no tiene
+    Función: consulta al usuario si desea guardar ciertos datos generados en un archivo\\
+    csv. En caso afirmativo le pasa a la función 'guardar_archivo' el string de nombre\\
+    de archivo y el string concatenado de datos recibidos por la lista, en ese orden.\\
+    En caso negativo, imprime por terminal que se omitió la creación del archivo.
     '''
     consulta = input("Desea exportar los resultados a .csv? (S/N): ")
     if re.match("^S$",consulta):
@@ -576,9 +588,14 @@ def consultar_exportar_archivo(lista:list)->None:
 
 def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios y un patrón tipo string (ambos necesarios)
+    Retorno: un string concatenado
+    Función: a partir del 'pattern' obtiene una lista de jugadores cuyos nombres matchearon\\
+    con éste. Luego evalúa si el valor-string de la clave 'logros' tiene como substring al\\
+    patrón 'Salon de la Fama', escrito con mayúscula y también con minúscula. Ya sea que el\\
+    patrón 'Salon de la Fama' coincida o no, genera un string con el aviso de pertenencia o\\
+    no pertenencia del jugador al Salón de la Fama y lo retorna. En caso de que ningún nombre\\
+    de los jugadores matchee con el patrón recibido, retornará el dato como string vacío.
     '''
     dato = ""
     lista_logros_jugador = obtener_nombre_y_logros_x_jugador(lista,pattern)
@@ -587,18 +604,21 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
         flag_pertenece = False
         if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
             flag_pertenece = True
-        if flag_pertenece == True:
-            dato = "{0} es Miembro del {1}".format(lista_logros_jugador[0]["nombre"],patron)
-        else:
-            dato = "{0} NO es Miembro del {1} del Baloncesto".format(lista_logros_jugador[0]["nombre"],patron)
+        if flag_pertenece == True: substring = "es"
+        else: substring = "NO es"
+    dato = "{0} {1} Miembro del {2} del Baloncesto".format(lista_logros_jugador[0]["nombre"],substring,patron)
     return dato
 
 
 def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios y un patrón tipo string (ambos necesarios)
+    Retorno: una lista de diccionarios
+    Función: recibe la lista de jugadores, crea una nueva lista sólo con las claves\\
+    'nombre' y 'logros'. Luego evalúa por medio del 'pattern' recibido si el nombre\\
+    de algún jugador coincide con el mismo. Si ocurre algún match dicho jugador se\\
+    appendea a una nueva lista y se retorna. Caso contrario, retorna una lista vacía\\
+    e imprime por terminal que no se encontraron coincidencias.
     '''
     lista_nombre_logros = obtener_nombre_y_logros_all_dream_team(lista)
     lista_retorno = []
@@ -613,9 +633,14 @@ def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
 
 def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesario)
+    Retorno: una lista de diccionarios
+    Función: recibe la lista de jugadores, la itera y toma de cada jugador los valores\\
+    de las claves 'nombre' y 'logros' para asigárselos a las mismas claves pero en un\\
+    nuevo diccionario. Al valor-lista de la clave 'logros' antes de incluirlo en el nuevo\\
+    diccionario lo convierte en un string concatenado con el separador ' - '. Al nuevo\\
+    diccionario con estas dos únicas claves lo appendea a una lista, y al finalizar la\\
+    iteración la retorna
     '''
     lista_retorno = []
     for i in range(len(lista)):
@@ -646,7 +671,7 @@ def seleccionar_jugador_por_nombre()->str:
 
 def seleccionar_indice_rango(lista:list,tipo:str)->int:
     '''
-    Parámetros: una lista de diccionarios y un string
+    Parámetros: una lista de diccionarios y un string (ambos necesarios)
     Retorno: un número entero
     Función: solicita al usuario ingresar un número dentro de un\\
     intervalo predefinido, lo valida con regex, lo convierte a entero\\
@@ -665,19 +690,20 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
     return indice_rango
 
 
-def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
+def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int=None,tipo:str=None)->str:
     '''
-    Parámetros: una lista de diccionarios, un entero y un string
+    Parámetros: una lista de diccionarios (necesaria), un entero (opcional) y un string\\
+    (opcional)
     Retorno: un string concatenado con saltos de linea
     Función: a partir de la lista de jugadores del Dream Team, crea una nueva lista
-    de jugadores (diccionarios) cuyas claves son: el nombre del jugador más todas\\
+    de jugadores (diccionarios) cuyas claves serán: el nombre del jugador más todas\\
     sus estadísticas (son todas las claves del diccionario de estadísticas dentro del\\
     diccionario/jugador). Luego esta nueva lista se puede recortar de acuerdo a los\\
     parámetros 'index_range' y 'tipo'. Con 'tipo' se indica si el 'index_range' es un\\
     índice ('i') o un rango ('r'), e 'index_range' será el número que actuará de índice\\
     o rango (primer jugador hasta la posición indicada inclusive) según el caso. Por\\
-    defecto, la función creará una lista con todos los jugadores y sus estadísticas.\\
-    Por último se vuelca la información de la lista ya filtrada en un string concatenado.
+    último vuelca la información de la lista ya filtrada (o no) en un string concatenado\\
+    y lo retorna.
     '''
     dato = ""
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
@@ -691,8 +717,8 @@ def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->
 
 def exportar_csv(lista:list)->None:
     '''
-    Parámetros: una lista con dos elementos string: nombre del\\
-    archivo y el dato a archivar, en ese preciso orden
+    Parámetros: una lista (necesaria) con dos elementos string:\\
+    nombre del archivo y el dato a archivar, en ese orden
     Retorno: no tiene
     Función: solicita al usuario ingresar un número dentro de un\\
     intervalo predefinido, lo pasa a una estructura de control 'match'
