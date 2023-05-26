@@ -179,19 +179,20 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         case "19":
             valor = ingresar_y_validar_valor()
             if valor != -1.0:
-                lista_auxiliar = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista,
-                                                                                    "posicion",
-                                                                                    "porcentaje_tiros_de_campo",
-                                                                                    "list_dict_str",
-                                                                                    "list_dict_num",
-                                                                                    True,
-                                                                                    True)
-                lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista_auxiliar,
+                lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
                                                                                         "porcentaje_tiros_de_campo",
                                                                                         True,
-                                                                                        "der")
-                dato = mostrar_data_hasta_clave_rango(lista_promedios)
+                                                                                        "der",
+                                                                                        "posicion")
+                lista_auxiliar = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista_promedios,
+                                                                                        "porcentaje_tiros_de_campo",
+                                                                                        "posicion",
+                                                                                        "list_dict_num",
+                                                                                        "list_dict_str",
+                                                                                        True,
+                                                                                        True)
+                dato = mostrar_data_hasta_clave_rango(lista_auxiliar)
                 nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(valor)
     if dato != "":
         imprimir_dato(dato)
@@ -202,35 +203,6 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
-def obtener_jugadores_por_key_jugador_y_key_estadistica(lista:list,key:str,key_estadistica:str)->list:
-    lista_retorno = []
-    for i in range(len(lista)):
-        diccio_auxiliar = {}
-        diccio_auxiliar["nombre"] = lista[i]["nombre"]
-        diccio_auxiliar[key] = lista[i][key]
-        diccio_auxiliar[key_estadistica] = lista[i]["estadisticas"][key_estadistica]
-        lista_retorno.append(diccio_auxiliar)
-    return lista_retorno
-
-
-def ordenar_jugadores_por_key_estadistica_y_key(lista:list,
-                                                key_uno:str,
-                                                key_dos:str,
-                                                tipo_dato_uno:str,
-                                                tipo_dato_dos:str,
-                                                flag_uno:bool,
-                                                flag_dos:bool):
-    lista_ordenada_key_uno = ordenar_bubble_sort(lista,
-                                                 tipo_dato_uno,
-                                                 key_uno,
-                                                 flag_uno)
-    lista_ordenada_key_dos = ordenar_bubble_sort(lista_ordenada_key_uno,
-                                                 tipo_dato_dos,
-                                                 key_dos,
-                                                 flag_dos)
-    return lista_ordenada_key_dos
-
-
 def obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista:list,
                                                            key_uno:str,
                                                            key_dos:str,
@@ -238,16 +210,15 @@ def obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista:list,
                                                            tipo_dato_dos:str,
                                                            flag_uno:bool,
                                                            flag_dos:bool)->list:
-    lista_jugadores = obtener_jugadores_por_key_jugador_y_key_estadistica(lista,
-                                                                          key_uno,
-                                                                          key_dos)
-    lista_ordenada = ordenar_jugadores_por_key_estadistica_y_key(lista_jugadores,
-                                                                 key_dos,
-                                                                 key_uno,
-                                                                 tipo_dato_dos,
-                                                                 tipo_dato_uno,
-                                                                 flag_dos,flag_uno)
-    return lista_ordenada
+    ordenar_bubble_sort(lista,
+                        tipo_dato_uno,
+                        key_uno,
+                        flag_uno)
+    ordenar_bubble_sort(lista,
+                        tipo_dato_dos,
+                        key_dos,
+                        flag_dos)
+    return lista
 
 
 def ingresar_y_validar_valor()->float:
@@ -262,18 +233,19 @@ def ingresar_y_validar_valor()->float:
 
 def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
                                                               valor:float,
-                                                              key:str,
+                                                              key_estadistica:str,
                                                               menor_a_mayor:bool=True,
-                                                              izq_o_der:str="der")->list:
+                                                              izq_o_der:str="der",
+                                                              key:str=None)->list:
     lista_retorno = []
     if valor != -1:
-        lista_estadisticas = obtener_estadistica_x_key_all_team(lista,key)
-        ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key)
-        maximo = lista_estadisticas[len(lista_estadisticas)-1][key]
+        lista_estadisticas = obtener_estadistica_x_key_all_dream_team(lista,key_estadistica,key)
+        ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key_estadistica)
+        maximo = lista_estadisticas[len(lista_estadisticas)-1][key_estadistica]
         if valor < maximo:
             lista_retorno = ordenar_quick_sort_reducida(lista_estadisticas,
                                                         valor,
-                                                        key,
+                                                        key_estadistica,
                                                         menor_a_mayor,
                                                         izq_o_der)
         else:
@@ -295,7 +267,7 @@ def ordenar_quick_sort_reducida(lista:list,
             (menor_a_mayor == False and diccio[key] < pivot):
             lista_derecha.append(diccio)
         elif (menor_a_mayor == True and diccio[key] < pivot) or\
-                (menor_a_mayor == False and diccio[key] > pivot):
+            (menor_a_mayor == False and diccio[key] > pivot):
             lista_izquierda.append(diccio)
     if izq_o_der == "izq":
         lista_retorno.extend(lista_izquierda)
@@ -324,7 +296,7 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
                                             tipo_dato:str,
                                             key:str,
                                             max_min:str="mayor")->str:
-    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
+    lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
     if max_min == "mayor":
         jugador = lista_estadisticas[len(lista_estadisticas)-1]
@@ -339,19 +311,35 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
     return dato
 
 
-def obtener_nombre_y_todas_las_estadisticas(lista:list)->list:
+def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
     lista_nombre_y_estadisticas = []
     for i in range(len(lista)):
         diccio_auxiliar = {}
         diccio_auxiliar["nombre"] = lista[i]["nombre"]
-        for key in lista[i]["estadisticas"]:
-            diccio_auxiliar[key] = lista[i]["estadisticas"][key]
+        if key != None:
+            diccio_auxiliar[key] = lista[i][key]
+        for clave in lista[i]["estadisticas"]:
+            diccio_auxiliar[clave] = lista[i]["estadisticas"][clave]
         lista_nombre_y_estadisticas.append(diccio_auxiliar)
     return lista_nombre_y_estadisticas
 
 
+def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:str=None)->list:
+    lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista,key)
+    lista_retorno = []
+    for i in range(len(lista_estadisticas)):
+        diccio_aux = {}
+        diccio_aux["nombre"] = lista_estadisticas[i]["nombre"]
+        if key != None:
+            diccio_aux[key] = lista_estadisticas[i][key]
+        diccio_aux[key_estadistica] = lista_estadisticas[i][key_estadistica]
+        lista_retorno.append(diccio_aux)
+    return lista_retorno
+
+
+
 def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
-    lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_team(lista,"promedio_puntos_por_partido")
+    lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_dream_team(lista,"promedio_puntos_por_partido")
     if exclusion == True:
         ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_num","promedio_puntos_por_partido")
         diccio_excluido = lista_promedios_de_puntos_x_partido[0]
@@ -363,16 +351,6 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     dato = mostrar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
     dato = "Promedio total de puntos por partido de todo el Dream Team: {0:.2f}\n{1}".format(promedio_total,dato)
     return dato
-
-
-def obtener_estadistica_x_key_all_team(lista:list,key:str)->list:
-    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
-    for i in range(len(lista_estadisticas)):
-        diccio_aux = {}
-        diccio_aux["nombre"] = lista_estadisticas[i]["nombre"]
-        diccio_aux[key] = lista_estadisticas[i][key]
-        lista_estadisticas[i] = diccio_aux
-    return lista_estadisticas
 
 
 def calcular_promedio(lista:list,key:str)->float:
@@ -500,7 +478,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
 
 def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
     dato = ""
-    lista_estadisticas = obtener_nombre_y_todas_las_estadisticas(lista)
+    lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     if tipo == "r":
         lista_estadisticas = lista_estadisticas[:index_range]
     elif tipo == "i":
@@ -594,4 +572,3 @@ if lista_jugadores != []:
     lista_jugadores_deepcopy = lista_jugadores[:]
     imprimir_dato("******LISTA CARGADA******\n")
     lanzar_app(lista_jugadores_deepcopy)
-
