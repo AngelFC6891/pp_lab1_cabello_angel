@@ -188,7 +188,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                                                                                         True,
                                                                                         "der",
                                                                                         "posicion")
-                lista_reordenada = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista_promedios,
+                lista_reordenada = obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista_promedios,
                                                                                         "porcentaje_tiros_de_campo",
                                                                                         "posicion",
                                                                                         "list_dict_num",
@@ -212,7 +212,11 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     return lista_nombre_dato
 
 
-def obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista:list,
+def inprimir_dato_con_formato(string:str)->str:
+    pass
+
+
+def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
                                                            key_uno:str,
                                                            key_dos:str,
                                                            tipo_dato_uno:str,
@@ -242,14 +246,14 @@ def obtener_todos_los_ranking_por_jugador(lista:list)->list:
                 ranking += 1
                 diccio_aux = {}
                 diccio_aux["nombre"] = diccio["nombre"]
-                diccio_aux[re.sub("_totales","",clave).capitalize()] = ranking
+                diccio_aux[re.sub("_totales","",clave)] = ranking
                 lista_retorno.append(diccio_aux)
         else:
             for diccio in lista_estadisticas:
                 ranking += 1
                 for dictionary in lista_retorno:
                     if dictionary["nombre"] == diccio["nombre"]:
-                        dictionary[re.sub("_totales","",clave).capitalize()] = ranking
+                        dictionary[re.sub("_totales","",clave)] = ranking
                         break
     return lista_retorno
 
@@ -371,16 +375,18 @@ def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:
 
 def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_dream_team(lista,"promedio_puntos_por_partido")
+    dato = ""
+    dato_excluido = ""
     if exclusion == True:
         ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_num","promedio_puntos_por_partido")
         diccio_excluido = lista_promedios_de_puntos_x_partido[0]
         lista_promedios_de_puntos_x_partido.pop(0)
-        imprimir_dato("Excluido: {},{}".format(diccio_excluido["nombre"],diccio_excluido["promedio_puntos_por_partido"]))
+        dato_excluido = "Excluido: {0},{1}\n".format(diccio_excluido["nombre"],diccio_excluido["promedio_puntos_por_partido"])
     else:
         ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
     promedio_total = calcular_promedio(lista_promedios_de_puntos_x_partido,"promedio_puntos_por_partido")
     dato = mostrar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
-    dato = "Promedio total de puntos por partido de todo el Dream Team: {0:.2f}\n{1}".format(promedio_total,dato)
+    dato = "{0}Promedio total de puntos por partido de todo el Dream Team: {1:.2f}\n{2}".format(dato_excluido,promedio_total,dato)
     return dato
 
 
@@ -436,7 +442,7 @@ def consultar_exportar_archivo(lista:list):
 
 
 def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
-    mensaje = ""
+    dato = ""
     lista_logros_jugador = obtener_nombre_y_logros_x_jugador(lista,pattern)
     if lista_logros_jugador != []:
         patron = "Salon de la Fama"
@@ -444,10 +450,10 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
         if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
             flag_pertenece = True
         if flag_pertenece == True:
-            mensaje = "{0} es Miembro del {1}".format(lista_logros_jugador[0]["nombre"],patron)
+            dato = "{0} es Miembro del {1}".format(lista_logros_jugador[0]["nombre"],patron)
         else:
-            mensaje = "{0} NO es Miembro del {1} del Baloncesto".format(lista_logros_jugador[0]["nombre"],patron)
-    return mensaje
+            dato = "{0} NO es Miembro del {1} del Baloncesto".format(lista_logros_jugador[0]["nombre"],patron)
+    return dato
 
 
 def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
@@ -469,8 +475,6 @@ def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
         diccio_nombre_logros["nombre"] = lista[i]["nombre"]
         diccio_nombre_logros["logros"] = "/".join(lista[i]["logros"][:])
         lista_retorno.append(diccio_nombre_logros)
-    if lista_retorno == []:
-        imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
     return lista_retorno
 
 
@@ -538,9 +542,9 @@ def seleccionar_opcion_a_guardar()->str:
     return retorno
 
 
-def leer_archivo(name_file:str,clave:str)->list:
+def leer_archivo_json(path_name_file:str,clave:str)->list:
     lista_retorno = []
-    with open(name_file,"r") as file:
+    with open(path_name_file,"r") as file:
         diccio_datos = json.load(file)
         lista_retorno = diccio_datos[clave]
     return lista_retorno
@@ -559,6 +563,14 @@ def guardar_archivo(name_file:str,new_data:str)->bool:
     
 
 def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->str:
+    '''
+    Parámetros: lista de diccionarios (necesario), clave del diccionario (opcional)
+    Retorno: string de valores de claves\\
+    Función: recibe la lista, la itera y toma de cada diccionario los valores de\\
+    todas sus claves y las concatena en un solo string usando una ',' (coma)\\
+    como separador. El parámetro opcional permite tomar los valores claves\\
+    desde el primero hasta el valor indicado
+    '''
     linea = ""
     if rango == None:
         rango = len(lista)
@@ -571,6 +583,15 @@ def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->st
 
 
 def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
+    '''
+    Parámetros: lista de diccionarios (necesario), posición de un diccionario\\
+    (necesario) y clave del diccionario (opcional)
+    Retorno: string de valores de claves\\
+    Función: recibe la lista y la posición de uno de sus diccionarios. Luego\\
+    toma todos los valores de todas sus claves y los concatena en un solo\\
+    string usando una ',' (coma) como separador. El parámetro opcional permite\\
+    tomar los valores desde la primera clave hasta el valor de la clave indicada
+    '''
     lista_claves = list(lista[i].keys())
     for j in range(len(lista_claves)):
         if j == 0:
@@ -583,9 +604,16 @@ def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
 
 
 def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
+    '''
+    Parámetros: lista de diccionarios (necesario), clave del diccionario (opcional)
+    Retorno: string de claves\\
+    Función: recibe la lista, toma todas las claves del primer diccionario y las\\
+    concatena en un solo string usando una ',' (coma) como separador. El parámetro\\
+    opcional permite tomar las claves desde la primera hasta la clave indicada
+    '''
     lista_encabezado = []
     for key in lista[0]:
-        lista_encabezado.append(key.capitalize())
+        lista_encabezado.append(re.sub("_"," ",key).capitalize())
         if clave != None and clave.capitalize() in lista_encabezado:
             break
     if len(lista_encabezado) > 1:
@@ -597,7 +625,7 @@ def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
 
 lista_dream_team = []
 try:
-    lista_dream_team = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
+    lista_dream_team = leer_archivo_json("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
 except FileNotFoundError:
     print("\nError: No se encontró el archivo .json en la ruta especificada\n")
 if lista_dream_team != []:
