@@ -41,6 +41,9 @@ def imprimir_menu():
     "18 - Jugador con la mayor cantidad de temporadas jugadas\n"\
     "19 - Mostrar los jugadores, ordenados por posición en la cancha, que hayan\n"\
     "     tenido un porcentaje de tiros de campo superior al valor ingresado\n"\
+    "20 - BONUS !!! Mostrar la posición de cada jugador en los siguientes rankings:\n"\
+    "               Puntos, Rebotes, Asistencias y Robos\n"\
+    "21 - Exportar a .csv\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -48,7 +51,7 @@ def imprimir_menu():
 def menu_principal()->str:
     imprimir_menu()
     opcion = input("Seleccione opción: ")
-    if re.match("[0-9]$|1[0-9]$",opcion):
+    if re.match(r"[0-9]$|1[0-9]$|2[0-1]$",opcion):
         pass
     else:
         print("Opción inválida. Inténtelo nuevamente")
@@ -66,8 +69,8 @@ def lanzar_app(lista:list):
         match opcion_seleccionada:
             case "0":
                 break
-            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" |\
-                 "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19":
+            case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" |\
+                  "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21":
                 ejecutar_match_anidado(lista,opcion_seleccionada)
             case "20":
                 exportar_csv(lista)
@@ -193,12 +196,18 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                                                                                         True,
                                                                                         True)
                 dato = mostrar_data_hasta_clave_rango(lista_auxiliar)
-                nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(valor)
+                nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(valor)
+        case "20":
+            pass
+            opcion_exportar = opcion
+        case "21":
+            pass
+
     if dato != "":
         imprimir_dato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
-    if exportar == False and opcion_exportar == "2":
+    if exportar == False and opcion_exportar == "2" or opcion_exportar == "20":
         consultar_exportar_archivo(lista_nombre_dato)
     return lista_nombre_dato
 
@@ -238,18 +247,17 @@ def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
                                                               izq_o_der:str="der",
                                                               key:str=None)->list:
     lista_retorno = []
-    if valor != -1:
-        lista_estadisticas = obtener_estadistica_x_key_all_dream_team(lista,key_estadistica,key)
-        ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key_estadistica)
-        maximo = lista_estadisticas[len(lista_estadisticas)-1][key_estadistica]
-        if valor < maximo:
-            lista_retorno = ordenar_quick_sort_reducida(lista_estadisticas,
-                                                        valor,
-                                                        key_estadistica,
-                                                        menor_a_mayor,
-                                                        izq_o_der)
-        else:
-            imprimir_dato("El valor ingresado supera el máximo {0}. Inténtelo nuevamente".format(maximo))
+    lista_estadisticas = obtener_estadistica_x_key_all_dream_team(lista,key_estadistica,key)
+    ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key_estadistica)
+    maximo = lista_estadisticas[len(lista_estadisticas)-1][key_estadistica]
+    if valor < maximo:
+        lista_retorno = ordenar_quick_sort_reducida(lista_estadisticas,
+                                                    valor,
+                                                    key_estadistica,
+                                                    menor_a_mayor,
+                                                    izq_o_der)
+    else:
+        imprimir_dato("El valor ingresado supera el máximo {0}. Inténtelo nuevamente".format(maximo))
     return lista_retorno
 
 
@@ -498,8 +506,8 @@ def exportar_csv(lista:list)->None:
 
 
 def seleccionar_opcion_a_guardar()->str:
-    opcion = input("Seleccione opción a guardar (1-4): ")
-    if re.match("[1-4]$",opcion):
+    opcion = input("Seleccione opción a guardar (1-20): ")
+    if re.match(r"[0-9]$|1[0-9]$|20$",opcion):
         retorno = opcion
     else:
         imprimir_dato("Opción inválida. Inténtelo nuevamente")
@@ -563,12 +571,13 @@ def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
         encabezado = lista_encabezado[0]
     return encabezado
 
-lista_jugadores = []
+
+lista_dream_team = []
 try:
-    lista_jugadores = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
+    lista_dream_team = leer_archivo("D:\Archivos\Textos\Académicos\Tecnicatura en Programación\(1) Primer Cuatrimestre\ProgLab I\Ejercicios\Ejercicios_PARCIAL_1°_CUATRI\pp_lab1_cabello_angel\dt.json","jugadores")
 except FileNotFoundError:
     print("\nError: No se encontró el archivo .json en la ruta especificada\n")
-if lista_jugadores != []:
-    lista_jugadores_deepcopy = lista_jugadores[:]
-    imprimir_dato("******LISTA CARGADA******\n")
-    lanzar_app(lista_jugadores_deepcopy)
+if lista_dream_team != []:
+    lista_dream_team_deepcopy = lista_dream_team[:]
+    imprimir_dato("\n****** LISTA DREAM TEAM CARGADA ******")
+    lanzar_app(lista_dream_team_deepcopy)
