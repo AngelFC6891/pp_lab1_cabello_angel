@@ -14,6 +14,11 @@ def imprimir_dato(string:str):
 
 
 def imprimir_menu():
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     menu = "\n1° EXAMEN PARCIAL 1° CUATRIMESTRE - DREAM TEAM\n\n"\
     "1 - Mostrar todos los jugadores del Dream Team\n"\
     "2 - Mostrar estadísticas de un jugador\n"\
@@ -49,6 +54,11 @@ def imprimir_menu():
 
 
 def menu_principal()->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     imprimir_menu()
     opcion = input("Seleccione opción: ")
     if re.match(r"[0-9]$|1[0-9]$|2[0-1]$",opcion):
@@ -64,6 +74,11 @@ def continuar():
 
 
 def lanzar_app(lista:list):
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     while True:
         opcion_seleccionada = menu_principal()
         match opcion_seleccionada:
@@ -78,6 +93,11 @@ def lanzar_app(lista:list):
 
 
 def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_nombre_dato = []
     dato = ""
     nombre_archivo = ""
@@ -97,9 +117,10 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             patron_nombre = seleccionar_jugador_por_nombre()
             if patron_nombre != "":
                 lista_jugador_logros = obtener_nombre_y_logros_x_jugador(lista,patron_nombre)
-                dato = mostrar_data_hasta_clave_rango(lista_jugador_logros)
-                imprimir_con_formato = consultar_imprimir_con_formato()
-                nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
+                if lista_jugador_logros != []:
+                    dato = mostrar_data_hasta_clave_rango(lista_jugador_logros)
+                    imprimir_con_formato = consultar_imprimir_con_formato()
+                    nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
             dato = mostrar_promedios_de_puntos_x_partido(lista)
             nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
@@ -219,6 +240,19 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
 
 
 def imprimir_dato_con_formato(string:str)->str:
+    '''
+    Parámetro: string concatenado
+    Retorno: string concatenado
+    Función: recibe un string concatenado con saltos de línea cuya primera linea\\
+    es el encabezado y las demás, los datos en el mismo orden que en el encabezado\\
+    (tipo tabla excel). Las lineas de datos a su vez, están concatenadas con comas.\\
+    Particiona el string recibido primero por salto de linea y luego por coma.\\
+    Itera las listas correspondientes, y le asigna a cada subtring del encabezado
+    su valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es\\
+    concatenado con un salto de línea. Al finalizar la asignación de valores almacena\\
+    el string en una lista. Repite el proceso con cada linea, y al finalizar concatena todos\\
+    los string de la lista con un salto de linea. Por último, imprime el string resultante
+    '''
     lista_lineas = re.split("\n",string)
     lista_encabezados = re.split(",",lista_lineas[0])
     dato_retorno = ""
@@ -235,6 +269,11 @@ def imprimir_dato_con_formato(string:str)->str:
 
 
 def consultar_imprimir_con_formato()->bool:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     consulta = input("Desea desea imprimir datos con formato? (S/N): ")
     flag_consulta = True
     if re.match("^S$",consulta):
@@ -264,6 +303,11 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
 
 
 def obtener_todos_los_ranking_por_jugador(lista:list)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     lista_claves = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
     lista_retorno = []
@@ -288,6 +332,11 @@ def obtener_todos_los_ranking_por_jugador(lista:list)->list:
 
 
 def ingresar_y_validar_valor()->float:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     valor = input("Ingrese un valor mayor que 0: ")
     if re.match(r"[1-9]|[1-9]+\.[0-9][0-9]|[1-9][0-9]+|[1-9][0-9]+\.[0-9][0-9]",valor):
         valor = float(valor)
@@ -303,6 +352,11 @@ def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
                                                               menor_a_mayor:bool=True,
                                                               izq_o_der:str="der",
                                                               key:str=None)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_retorno = []
     lista_estadisticas = obtener_estadistica_x_key_all_dream_team(lista,key_estadistica,key)
     ordenar_bubble_sort(lista_estadisticas,"list_dict_num",key_estadistica)
@@ -323,6 +377,11 @@ def ordenar_quick_sort_reducida(lista:list,
                                 key:str,
                                 menor_a_mayor:bool=True,
                                 izq_o_der:str="der")->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_retorno = []
     lista_izquierda = []
     lista_derecha = []
@@ -342,6 +401,11 @@ def ordenar_quick_sort_reducida(lista:list,
 
 
 def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
     ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
     dato = "\nEl jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
@@ -361,6 +425,11 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
                                             tipo_dato:str,
                                             key:str,
                                             max_min:str="mayor")->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
     if max_min == "mayor":
@@ -377,6 +446,11 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
 
 
 def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_nombre_y_estadisticas = []
     for i in range(len(lista)):
         diccio_auxiliar = {}
@@ -390,6 +464,11 @@ def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
 
 
 def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:str=None)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista,key)
     lista_retorno = []
     for i in range(len(lista_estadisticas)):
@@ -403,6 +482,11 @@ def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:
 
 
 def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_dream_team(lista,"promedio_puntos_por_partido")
     dato = ""
     dato_excluido = ""
@@ -420,6 +504,11 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
 
 
 def calcular_promedio(lista:list,key:str)->float:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     contador = 0
     acumulador = 0
     for diccio in lista:
@@ -437,6 +526,11 @@ def ordenar_bubble_sort(lista:list,
                         tipo_dato:str,
                         key:str,
                         flag_orden:bool=True)->None:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     rango = len(lista) 
     flag_swap = True
     while flag_swap:
@@ -453,6 +547,11 @@ def retornar_tipo_dato(lista:list,
                        tipo_dato:str,
                        key:str,
                        i:int)->None:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     if tipo_dato == "list_dict_str":
         dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num":
@@ -462,7 +561,12 @@ def retornar_tipo_dato(lista:list,
     return dato
 
 
-def consultar_exportar_archivo(lista:list):
+def consultar_exportar_archivo(lista:list)->None:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     consulta = input("Desea exportar los resultados a .csv? (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
@@ -471,6 +575,11 @@ def consultar_exportar_archivo(lista:list):
 
 
 def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     dato = ""
     lista_logros_jugador = obtener_nombre_y_logros_x_jugador(lista,pattern)
     if lista_logros_jugador != []:
@@ -486,6 +595,11 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
 
 
 def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_nombre_logros = obtener_nombre_y_logros_all_dream_team(lista)
     lista_retorno = []
     for diccio in lista_nombre_logros:
@@ -498,6 +612,11 @@ def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
 
 
 def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: 
+    '''
     lista_retorno = []
     for i in range(len(lista)):
         diccio_nombre_logros = {}
@@ -508,9 +627,17 @@ def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
 
 
 def seleccionar_jugador_por_nombre()->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un string
+    Función: solicita al usuario ingresar el nombre de un jugador,\\
+    y lo valida así: al menos 3 caracteres alfabéticos en minúscula o\\
+    mayúscula. Si resulta válido lo retorna. En caso contrario imprime\\
+    un aviso de error por terminal y devuelve un string vacío.
+    '''
     nombre = input("Escribir nombre de jugador: ")
     patron = ""
-    if re.match(r"^[A-Za-z ]{3}",nombre):
+    if re.match(r"^[A-Za-z]{3}",nombre):
         patron = nombre
     else:
         imprimir_dato("Nombre inválido. Inténtelo nuevamente")
@@ -530,7 +657,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
     if tipo == "r": subtring = "hasta el"
     elif tipo == "i": subtring = "del"
     indice_rango = input("Mostrar estadísticas {0} jugador número (1-{1}): ".format(subtring,len(lista)))
-    if re.match("([0-9]+)$",indice_rango) and int(indice_rango) <= len(lista):
+    if re.match("[1-9]$|1[0-9]$",indice_rango) and int(indice_rango) <= len(lista):
         indice_rango = int(indice_rango)
     else:
         indice_rango = -1
@@ -611,7 +738,7 @@ def leer_archivo_json(path_name_file:str,clave:str)->list:
     formato de lista de diccionarios
     '''
     lista_retorno = []
-    with open(path_name_file,"r") as file:
+    with open(path_name_file,"r",encoding="utf-8") as file:
         diccio_datos = json.load(file)
         lista_retorno = diccio_datos[clave]
     return lista_retorno
