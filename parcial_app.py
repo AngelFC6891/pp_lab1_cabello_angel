@@ -531,6 +531,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
 
 
 def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
+    
     dato = ""
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     if tipo == "r":
@@ -542,6 +543,17 @@ def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->
 
 
 def exportar_csv(lista:list)->None:
+    '''
+    Parámetros: una lista con dos elementos string: nombre del\\
+    archivo y el dato a archivar, en ese preciso orden
+    Retorno: no tiene
+    Función: solicita al usuario ingresar un número dentro de un\\
+    intervalo predefinido, lo pasa a una estructura de control 'match'
+    y de allí obtiene una lista con dos elementos: nombre de archivo\\
+    y dato string a archivar, en ese orden. Si dicha lista contiene\\
+    estos dos elementos, creará un archivo csv donde será guardado el\\
+    dato tipo string.
+    '''
     opcion = seleccionar_opcion_a_guardar()
     if opcion != "-1":
         lista_name_data = ejecutar_match_anidado(lista,opcion,True)
@@ -552,6 +564,14 @@ def exportar_csv(lista:list)->None:
 
 
 def seleccionar_opcion_a_guardar()->str:
+    '''
+    Parámetros: no requiere
+    Retorno: un número entero en formato string
+    Función: solicita al usuario ingresar un número dentro de\\
+    un intervalo predefinido, lo valida y lo devuelve. En caso\\
+    de ingresar un 'número' no admitido, imprime un aviso por\\
+    terminal y devuelve el string '-1'
+    '''
     opcion = input("Seleccione opción a guardar (1-20): ")
     if re.match(r"[0-9]$|1[0-9]$|20$",opcion):
         retorno = opcion
@@ -562,6 +582,13 @@ def seleccionar_opcion_a_guardar()->str:
 
 
 def leer_archivo_json(path_name_file:str,clave:str)->list:
+    '''
+    Parámetros: ruta del archivo (necesario), atributo principal (o sea,\\
+    una lista) del archivo json (necesario)
+    Retorno: una lista de diccionarios
+    Función: lee la información del archivo json para luego cargarla en\\
+    formato de lista de diccionarios
+    '''
     lista_retorno = []
     with open(path_name_file,"r") as file:
         diccio_datos = json.load(file)
@@ -570,15 +597,23 @@ def leer_archivo_json(path_name_file:str,clave:str)->list:
 
 
 def guardar_archivo(name_file:str,new_data:str)->bool:
+    '''
+    Parámetros: nombre de archivo (necesario), datos a escribir (necesario)
+    Retorno: booleano 'True' si el archivo se creó correctamente, y en caso\\
+    contrario devuelve 'False'\\
+    Función: crea un archivo con la extensión indicada en 'name_file' cuyo\\
+    contenido será la información almacenada en 'new_data'. El modo de\\
+    escritura es 'w+'.
+    '''
     with open(name_file,"w+") as file:
         bytes = file.write(new_data)
+        flag_guardado = True
     if bytes == 0:
         imprimir_dato("Error al crear el archivo: {0}".format(name_file))
-        resultado = False
+        flag_guardado = False
     else:
         imprimir_dato("Se creó el archivo: {0}".format(name_file))
-        resultado = True
-    return resultado
+    return flag_guardado 
     
 
 def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->str:
@@ -613,7 +648,7 @@ def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
     Función: recibe la lista y la posición de uno de sus diccionarios. Luego\\
     toma todos los valores de todas sus claves y los concatena en un solo\\
     string usando una ',' (coma) como separador. El parámetro opcional permite\\
-    tomar los valores desde la primera clave hasta el valor de la clave indicada
+    tomar los valores desde la primera clave hasta el valor de la clave indicada.
     '''
     lista_claves = list(lista[i].keys())
     for j in range(len(lista_claves)):
@@ -632,7 +667,7 @@ def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
     Retorno: string de claves\\
     Función: recibe la lista, toma todas las claves del primer diccionario y las\\
     concatena en un solo string usando una ',' (coma) como separador. El parámetro\\
-    opcional permite tomar las claves desde la primera hasta la clave indicada
+    opcional permite tomar las claves desde la primera hasta la clave indicada.
     '''
     lista_encabezado = []
     for key in lista[0]:
