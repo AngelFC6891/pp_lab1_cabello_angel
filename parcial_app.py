@@ -124,6 +124,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                     nombre_archivo = "logros_de_jugador_{0}.csv".format(patron_nombre[:3])
         case "4":
             dato = mostrar_promedios_de_puntos_x_partido(lista)
+            imprimir_con_formato = consultar_imprimir_con_formato()
             nombre_archivo = "promedio_puntos_por_partido_all_team.csv"
         case "5":
             patron_nombre = seleccionar_jugador_por_nombre()
@@ -244,7 +245,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
 
 def imprimir_dato_con_formato(string:str)->str:
     '''
-    Parámetro: string concatenado
+    Parámetro: string concatenado (necesario)
     Retorno: string concatenado
     Función: recibe un string concatenado con saltos de línea cuya primera linea\\
     es el encabezado y las demás, los datos en el mismo orden que en el encabezado\\
@@ -253,22 +254,31 @@ def imprimir_dato_con_formato(string:str)->str:
     Itera las listas correspondientes, y le asigna a cada subtring del encabezado
     su valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es\\
     concatenado con un salto de línea. Al finalizar la asignación de valores almacena\\
-    el string en una lista. Repite el proceso con cada linea, y al finalizar concatena todos\\
-    los string de la lista con un salto de linea. Por último, imprime el string resultante
+    el string en una lista. Repite el proceso con cada linea, y al finalizar concatena\\
+    todos los string de la lista con un salto de linea. Por último, imprime el string\\
+    resultante.
     '''
     lista_lineas = re.split("\n",string)
     lista_encabezados = re.split(",",lista_lineas[0])
+    rango = range(1,len(lista_lineas))
+    if len(lista_encabezados) == 1:
+        lista_encabezados = re.split(",",lista_lineas[1])
+        rango = range(2,len(lista_lineas))
     dato_retorno = ""
     lista_datos_formateados = []
-    for i in range(1,len(lista_lineas)):
+    for i in rango:
         lista_datos = re.split(",",lista_lineas[i])
-        dato_formateado = "\n"
+        dato_formateado = ""
         for j in range(len(lista_datos)):
             dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            if j != len(lista_datos) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
-            else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
+            if j != len(lista_datos) - 1: dato_formateado = "{0}{1} - ".format(dato_formateado,dato)
+            elif j == len(lista_datos) - 1:
+                if i != len(lista_lineas) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
+                else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
         lista_datos_formateados.append(dato_formateado)
-    dato_retorno = "\n".join(lista_datos_formateados[:])
+    dato_retorno = "".join(lista_datos_formateados[:])
+    if len(re.split(",",lista_lineas[0])) == 1:
+        dato_retorno = "\n{0}\n\n{1}".format(lista_lineas[0],dato_retorno)
     imprimir_dato(dato_retorno)
 
 
@@ -494,13 +504,17 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_dream_team(lista,"promedio_puntos_por_partido")
     dato = ""
     dato_excluido = ""
+    ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,
+                            "list_dict_num",
+                            "promedio_puntos_por_partido")
     if exclusion == True:
-        ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_num","promedio_puntos_por_partido")
         diccio_excluido = lista_promedios_de_puntos_x_partido[0]
         lista_promedios_de_puntos_x_partido.pop(0)
-        dato_excluido = "Excluido: {0},{1}\n".format(diccio_excluido["nombre"],diccio_excluido["promedio_puntos_por_partido"])
-    else:
-        ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,"list_dict_str","nombre")
+        dato_excluido = "Excluido: {0},{1}\n".format(diccio_excluido["nombre"],
+                                                     diccio_excluido["promedio_puntos_por_partido"])
+    ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,
+                        "list_dict_str",
+                        "nombre")
     promedio_total = calcular_promedio(lista_promedios_de_puntos_x_partido,"promedio_puntos_por_partido")
     dato = mostrar_data_hasta_clave_rango(lista_promedios_de_puntos_x_partido)
     dato = "{0}Promedio total de puntos por partido de todo el Dream Team: {1:.2f}\n{2}".format(dato_excluido,promedio_total,dato)
@@ -519,21 +533,20 @@ def calcular_promedio(lista:list,key:str)->float:
         if key in diccio and (type(diccio[key]) == int or type(diccio[key]) == float):
             acumulador += diccio[key]
             contador += 1
-    if contador > 0:
-        promedio = acumulador / contador
-    else:
-        promedio = -1
+    if contador > 0: promedio = acumulador / contador
+    else: promedio = -1
     return promedio
 
 
 def ordenar_bubble_sort(lista:list,
                         tipo_dato:str,
-                        key:str,
+                        key:str=None,
                         flag_orden:bool=True)->None:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un string 'key'\\
+    (necesario) y un booleano 'flag_orden' (opcional)
+    Retorno: no tiene
+    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de elementos. 
     '''
     rango = len(lista) 
     flag_swap = True
@@ -541,32 +554,35 @@ def ordenar_bubble_sort(lista:list,
         flag_swap = False
         rango -= 1
         for i in range(rango):
-            if  flag_orden == False and retornar_tipo_dato(lista,tipo_dato,key,i) < retornar_tipo_dato(lista,tipo_dato,key,i+1) \
-             or flag_orden == True and retornar_tipo_dato(lista,tipo_dato,key,i) > retornar_tipo_dato(lista,tipo_dato,key,i+1):
+            if  flag_orden == False and\
+                retornar_tipo_dato(lista,tipo_dato,i,key) <\
+                retornar_tipo_dato(lista,tipo_dato,i+1,key) \
+             or flag_orden == True and\
+                retornar_tipo_dato(lista,tipo_dato,i,key) >\
+                retornar_tipo_dato(lista,tipo_dato,i+1,key):
                 lista[i],lista[i+1] = lista[i+1],lista[i]
                 flag_swap = True
 
 
 def retornar_tipo_dato(lista:list,
                        tipo_dato:str,
-                       key:str,
-                       i:int)->None:
+                       i:int,
+                       key:str=None)->None:
     '''
-    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un string 'key'\\
-    (necesario) y un valor entero tipo entero (necesario)
+    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un valor\\
+    entero tipo entero (necesario) y un string 'key'(opcional)
     Retorno: una estructura sintáctica que representa un valor determinado (string, int o float)
     Función: define una estructura sintáctica representativa de un valor determinado de acuerdo\\
     al string 'tipo_dato'. Los valores que toma este último son también representativos del tipo de\\
-    estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde la\\
-    clave del diccioario es un string. Esta función solo puede ser usada en iteraciones de for, pues\\
-    el último parámetro necesario es el índice 'i' de la lista.
+    estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde el\\
+    valor de la clave del diccionario es un string. Esta función solo puede ser usada en iteraciones\\
+    de for, pues el segundo parámetro necesario es el índice 'i' de la lista. El parámetro 'key' se\\
+    puede omitir, solo será necesario para recorrer una determinada clave de los diccionarios de\\
+    una de una lista de diccionarios.
     '''
-    if tipo_dato == "list_dict_str":
-        dato = lista[i][key][0]
-    elif tipo_dato == "list_dict_num":
-        dato = lista[i][key]
-    elif tipo_dato == "list_dict_len_key":
-        dato = len(lista[i][key])
+    if tipo_dato == "list_dict_str": dato = lista[i][key][0]
+    elif tipo_dato == "list_dict_num": dato = lista[i][key]
+    elif tipo_dato == "list_dict_len_key": dato = len(lista[i][key])
     return dato
 
 
