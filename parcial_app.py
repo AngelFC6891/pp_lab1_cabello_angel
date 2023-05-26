@@ -518,10 +518,18 @@ def seleccionar_jugador_por_nombre()->str:
 
 
 def seleccionar_indice_rango(lista:list,tipo:str)->int:
-    if tipo == "r":
-        indice_rango = input("Mostrar estadísticas hasta el jugador número (1-{0}): ".format(len(lista)))
-    elif tipo == "i":
-        indice_rango = input("Mostrar estadísticas del jugador número (1-{0}): ".format(len(lista)))
+    '''
+    Parámetros: una lista de diccionarios y un string
+    Retorno: un número entero
+    Función: solicita al usuario ingresar un número dentro de un\\
+    intervalo predefinido, lo valida con regex, lo convierte a entero\\
+    y lo retorna. Si el número ingresado no es válido retornará un - 1\\
+    (tipo entero). El parámetro 'tipo' cambia el formato de la oración\\
+    con la que se solicita el ingreso del número.
+    '''
+    if tipo == "r": subtring = "hasta el"
+    elif tipo == "i": subtring = "del"
+    indice_rango = input("Mostrar estadísticas {0} jugador número (1-{1}): ".format(subtring,len(lista)))
     if re.match("([0-9]+)$",indice_rango) and int(indice_rango) <= len(lista):
         indice_rango = int(indice_rango)
     else:
@@ -531,7 +539,19 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
 
 
 def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int,tipo:str)->str:
-    
+    '''
+    Parámetros: una lista de diccionarios, un entero y un string
+    Retorno: un string concatenado con saltos de linea
+    Función: a partir de la lista de jugadores del Dream Team, crea una nueva lista
+    de jugadores (diccionarios) cuyas claves son: el nombre del jugador más todas\\
+    sus estadísticas (son todas las claves del diccionario de estadísticas dentro del\\
+    diccionario/jugador). Luego esta nueva lista se puede recortar de acuerdo a los\\
+    parámetros 'index_range' y 'tipo'. Con 'tipo' se indica si el 'index_range' es un\\
+    índice ('i') o un rango ('r'), e 'index_range' será el número que actuará de índice\\
+    o rango (primer jugador hasta la posición indicada inclusive) según el caso. Por\\
+    defecto, la función creará una lista con todos los jugadores y sus estadísticas.\\
+    Por último se vuelca la información de la lista ya filtrada en un string concatenado.
+    '''
     dato = ""
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     if tipo == "r":
@@ -552,7 +572,8 @@ def exportar_csv(lista:list)->None:
     y de allí obtiene una lista con dos elementos: nombre de archivo\\
     y dato string a archivar, en ese orden. Si dicha lista contiene\\
     estos dos elementos, creará un archivo csv donde será guardado el\\
-    dato tipo string.
+    dato tipo string. Caso contrario, se imprimirá por terminal un aviso\\
+    de error.
     '''
     opcion = seleccionar_opcion_a_guardar()
     if opcion != "-1":
