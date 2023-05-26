@@ -55,7 +55,7 @@ def menu_principal()->str:
         pass
     else:
         print("Opción inválida. Inténtelo nuevamente")
-        opcion = -1
+        opcion = "-1"
     return opcion
 
 
@@ -70,9 +70,9 @@ def lanzar_app(lista:list):
             case "0":
                 break
             case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" |\
-                  "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21":
+                  "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20":
                 ejecutar_match_anidado(lista,opcion_seleccionada)
-            case "20":
+            case "21":
                 exportar_csv(lista)
         continuar()
 
@@ -188,20 +188,20 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                                                                                         True,
                                                                                         "der",
                                                                                         "posicion")
-                lista_auxiliar = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista_promedios,
+                lista_reordenada = obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista_promedios,
                                                                                         "porcentaje_tiros_de_campo",
                                                                                         "posicion",
                                                                                         "list_dict_num",
                                                                                         "list_dict_str",
                                                                                         True,
                                                                                         True)
-                dato = mostrar_data_hasta_clave_rango(lista_auxiliar)
+                dato = mostrar_data_hasta_clave_rango(lista_reordenada)
                 nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(valor)
         case "20":
-            pass
+            lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista)
+            dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
+            nombre_archivo = "jugadores_rankeados.csv"
             opcion_exportar = opcion
-        case "21":
-            pass
 
     if dato != "":
         imprimir_dato(dato)
@@ -228,6 +228,30 @@ def obtener_lista_ordenada_x_key_jugador_y_key_estadistica(lista:list,
                         key_dos,
                         flag_dos)
     return lista
+
+
+def obtener_todos_los_ranking_por_jugador(lista:list)->list:
+    lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
+    lista_claves = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
+    lista_retorno = []
+    for clave in lista_claves:
+        ordenar_bubble_sort(lista_estadisticas,"list_dict_num",clave,False)
+        ranking = 0
+        if lista_retorno == []:
+            for diccio in lista_estadisticas:
+                ranking += 1
+                diccio_aux = {}
+                diccio_aux["nombre"] = diccio["nombre"]
+                diccio_aux[re.sub("_totales","",clave).capitalize()] = ranking
+                lista_retorno.append(diccio_aux)
+        else:
+            for diccio in lista_estadisticas:
+                ranking += 1
+                for dictionary in lista_retorno:
+                    if dictionary["nombre"] == diccio["nombre"]:
+                        dictionary[re.sub("_totales","",clave).capitalize()] = ranking
+                        break
+    return lista_retorno
 
 
 def ingresar_y_validar_valor()->float:
@@ -271,11 +295,11 @@ def ordenar_quick_sort_reducida(lista:list,
     lista_derecha = []
     pivot = valor
     for diccio in lista:
-        if (menor_a_mayor == True and diccio[key] > pivot) or\
-            (menor_a_mayor == False and diccio[key] < pivot):
+        if menor_a_mayor == True and diccio[key] > pivot or\
+           menor_a_mayor == False and diccio[key] < pivot:
             lista_derecha.append(diccio)
-        elif (menor_a_mayor == True and diccio[key] < pivot) or\
-            (menor_a_mayor == False and diccio[key] > pivot):
+        elif menor_a_mayor == True and diccio[key] < pivot or\
+             menor_a_mayor == False and diccio[key] > pivot:
             lista_izquierda.append(diccio)
     if izq_o_der == "izq":
         lista_retorno.extend(lista_izquierda)
@@ -343,7 +367,6 @@ def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:
         diccio_aux[key_estadistica] = lista_estadisticas[i][key_estadistica]
         lista_retorno.append(diccio_aux)
     return lista_retorno
-
 
 
 def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
