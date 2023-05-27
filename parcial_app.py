@@ -254,7 +254,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             imprimir_dato_con_formato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
-    if exportar == False and opcion_exportar == "2" or opcion_exportar == "20":
+    if exportar == False and (opcion_exportar == "2" or opcion_exportar == "20"):
         consultar_exportar_archivo(lista_nombre_dato)
     return lista_nombre_dato
 
@@ -290,7 +290,7 @@ def imprimir_dato_con_formato(string:str)->str:
         for j in range(len(lista_datos)):
             if j == 0 and dato == "": dato = "\n{0}: {1}".format(lista_encabezados[j],lista_datos[j])
             else: dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            if len(lista_encabezados) <= 3: separador = " - "
+            if len(lista_encabezados) <= 3: separador = " -> "
             else: separador = "\n"
             if j != len(lista_datos) - 1: dato_formateado = "{0}{1}{2}".format(dato_formateado,dato,separador)
             else:
@@ -537,9 +537,15 @@ def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
 
 def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:str=None)->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria), un string 'key_estadistica'\\
+    y otro string 'key' (opcional)
+    Retorno: una lista de diccionarios
+    Función: obtiene una lista de jugadores con todas sus claves estadísticas.\\
+    Extrae de la misma, solo el nombre y la 'key_estadistica' pasada por parámetro.\\
+    Con éstas crea un nuevo diccionario y lo appendea a la lista que será retornada.\\
+    Repite este proceso por iteración de la lista obtenida al comienzo. Como opción,\\
+    puede incluir en cada jugador, una clave no estadística más 'key', aparte de\\
+    'nombre'.
     '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista,key)
     lista_retorno = []
@@ -555,9 +561,12 @@ def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:
 
 def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria) y un booleano 'exclusion' (opcional)
+    Retorno: un string informativo de una linea
+    Función: primero obtiene una nueva lista de jugadores con solo dos claves en cada uno:\\
+    'nombre' y 'promedio_puntos_por_partido'. Luego ordena dicha lista de manera ascendente.\\
+    Seguidamente puede excluir (o no) al jugador con el valor mínimo de la lista, de la clave\\
+    en cuestión. Reordena la lista por nombre, calcula el promedio y genera la linea a retornar.
     '''
     lista_promedios_de_puntos_x_partido = obtener_estadistica_x_key_all_dream_team(lista,"promedio_puntos_por_partido")
     dato = ""
@@ -583,10 +592,10 @@ def calcular_promedio(lista:list,key:str)->float:
     '''
     Parámetros: lista de diccionarios (necesaria) y un string 'key' (necesario)
     Retorno: un valor tipo float
-    Función: recibe una lista de diccionario, la recorre y calcula el promedio\\
-    de los valores de una de las claves de cada diccionario. En caso de no existir\\
-    dicha clave dentro del diccionario, la omitirá en el denominador del promedio.\\
-    En caso de que la clave no se encuentre en ningún diccionario, retornará -1.
+    Función: recorre la lista de diccionarios y calcula el promedio de los valores\\
+    de una de las claves de cada diccionario. En caso de no existir dicha clave dentro\\
+    del diccionario, la omitirá en el denominador del promedio. En caso de que la clave\\
+    no se encuentre en ningún diccionario, retornará -1.
     '''
     contador = 0
     acumulador = 0
@@ -604,14 +613,16 @@ def ordenar_bubble_sort(lista:list,
                         key:str=None,
                         flag_orden:bool=True)->None:
     '''
-    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un string 'key'\\
-    (necesario) y un booleano 'flag_orden' (opcional)
+    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario),\\
+    un string 'key' (necesario) y un booleano 'flag_orden' (opcional)
     Retorno: no tiene
-    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de elementos. El string\\
-    'tipo_dato' debe ser representativo de tipo de valor a comparar en el ordenamiento. El string 'key' es\\
-    opcional ya que la lista podría ser o no de diccionarios, es decir, podría requerir o no un clave a partir\\
-    de la cual necesite ordena la lista. El booleano 'flag_orden' es por defecto 'True', o sea, está programado\\
-    para ordenar de manera ascendente (o menor a mayor), salvo que se indique lo contrario asignándole 'False'.
+    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de\\
+    elementos. El string 'tipo_dato' debe ser representativo de tipo de valor a comparar\\
+    en el ordenamiento. El string 'key' es opcional ya que la lista podría ser o no de\\
+    diccionarios, es decir, podría requerir o no un clave a partir de la cual necesite\\
+    ordena la lista. El booleano 'flag_orden' es por defecto 'True', o sea, está programado\\
+    para ordenar de manera ascendente (o menor a mayor), salvo que se indique lo\\
+    contrario asignándole 'False'.
     '''
     rango = len(lista) 
     flag_swap = True
@@ -687,7 +698,7 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
             flag_pertenece = True
         if flag_pertenece == True: substring = "es"
         else: substring = "NO es"
-    dato = "{0} {1} Miembro del {2} del Baloncesto".format(lista_logros_jugador[0]["nombre"],substring,patron)
+        dato = "{0} {1} Miembro del {2} del Baloncesto".format(lista_logros_jugador[0]["nombre"],substring,patron)
     return dato
 
 
