@@ -16,7 +16,7 @@ def imprimir_menu():
     '''
     Parámetros: no requiere
     Retorno: no tiene
-    Función: imprime por terminal el menú de opciones, el cual es un solo string\\
+    Descripción: imprime por terminal el menú de opciones, el cual es un solo string\\
     concatenado con saltos de linea.
     '''
     menu = "\n1° EXAMEN PARCIAL 1° CUATRIMESTRE - DREAM TEAM\n\n"\
@@ -57,7 +57,7 @@ def menu_principal()->str:
     '''
     Parámetros: no requiere
     Retorno: un string
-    Función: imprime por terminal el menú de opciones, solicita al usuario\\
+    Descripción: imprime por terminal el menú de opciones, solicita al usuario\\
     que ingrese la opción deseada (un entero tipo string) y la valida con regex\\
     entre las opciones posibles del menú. En caso de ser válida, la retorna y si\\
     no, retornará '-1' imprimiendo por terminal un aviso de error.
@@ -80,7 +80,7 @@ def lanzar_app(lista:list):
     '''
     Parámetros: lista de diccionarios (necesaria)
     Retorno: no tiene
-    Función: recibe la lista de jugadores del Dream Team, ejecuta el menú\\
+    Descripción: recibe la lista de jugadores del Dream Team, ejecuta el menú\\
     principal, solicita al usuario que ingrese una opción, la matchea y lanza\\
     el match anidado que ejecutará la opción seleccionada. El último 'case' del\\
     match principal queda reservado para la opción de 'exportar a csv'. Asimismo,\\
@@ -105,7 +105,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     Parámetros: lista de diccionarios (necesaria), un entero tipo string 'opcion'\\
     (necesaria) y un booleano 'exportar' (opcional)
     Retorno: una lista de dos elementos tipo string
-    Función: ejecuta todas las opciones del menú, excepto las opciones '0' y última\\
+    Descripción: ejecuta todas las opciones del menú, excepto las opciones '0' y última\\
     que quedan reservadas para el match principal. Cada 'case' ejecutado genera dos
     strings: un nombre de archivo y uno de datos (string concatenado). Al finalizar\\
     la ejecución del 'case' ambos serán almacenados en una lista, en ese orden, para\\
@@ -263,7 +263,7 @@ def imprimir_dato_con_formato(string:str)->str:
     '''
     Parámetro: string concatenado (necesario)
     Retorno: string concatenado
-    Función: recibe un string concatenado con saltos de línea cuya primera linea\\
+    Descripción: recibe un string concatenado con saltos de línea cuya primera linea\\
     es el encabezado (también puede no serlo pero la función está preparada para\\
     salvar esa situación) y las demás, los datos en el mismo orden que en el encabezado\\
     (tipo tabla excel). Las lineas de datos a su vez, están concatenadas con comas.\\
@@ -307,7 +307,7 @@ def consultar_imprimir_con_formato()->bool:
     '''
     Parámetros: no requiere
     Retorno: un booleano
-    Función: consulta al usuario por terminal si desea imprimir los datos obtenidos\\
+    Descripción: consulta al usuario por terminal si desea imprimir los datos obtenidos\\
     con un formato distinto al formato de guardado csv. En caso que el usuario\\
     acepte devuelve 'True' y si no, 'False'. En este último caso, también se imprime\\
     po terminal un aviso de opción omitida.
@@ -335,7 +335,7 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
     float o int; dos string 'key', dos string 'tipo_dato' y dos booleanos 'flag' (todos\\
     paramétros necesarios excepto los 'flag' de ordenamiento)
     Retorno: la misma lista recibida pero reordenada
-    Función: reordena la lista recibida, primero según de la clave estadística y luego\\
+    Descripción: reordena la lista recibida, primero según de la clave estadística y luego\\
     según la clave no estadística. Los parámetros restantes determinan el tipo de dato a\\
     ordenar y el tipo de ordanamiento, ascendente ('True') o descendente ('False').
     '''
@@ -354,7 +354,7 @@ def obtener_todos_los_ranking_por_jugador(lista:list)->list:
     '''
     Parámetros: una lista de diccionarios (necesaria)
     Retorno: una lista de diccionarios
-    Función: primero obtiene una lista de diccionarios con el nombre del jugador y todas\\
+    Descripción: primero obtiene una lista de diccionarios con el nombre del jugador y todas\\
     sus estadísticas. Luego itera la lista de claves estadísticas de interés para generar\\
     el ranking. Por cada clave iterada, ordena la lista de estadísticas según esta última,\\
     de manera descendente. A continuación recorre la lista reordenada. Utiliza un contador\\
@@ -393,7 +393,7 @@ def ingresar_y_validar_valor()->float:
     '''
     Parámetros: no requiere
     Retorno: un valor tipo float
-    Función: solicita al usuario ingresar un valor mayor que 1 que puede ser int o float.\\
+    Descripción: solicita al usuario ingresar un valor mayor que 1 que puede ser int o float.\\
     Luego lo valido con regex. Si cumple la validación lo retorna castéandolo a float. Caso\\
     contrario, retornará -1.0 e imprimirá un aviso por terminal informando que el valor no\\
     es válido.
@@ -418,7 +418,7 @@ def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
     'key_estadistica' (necesario), un booleano 'ascdt'(opcional), un string 'izq_o_der' (opcional)\\
     y otro string 'key' (opcional)
     Retorno: una lista de diccionarios
-    Función: primero obtiene una lista con el nombre y una clave estadística de todos los jugadores.\\
+    Descripción: primero obtiene una lista con el nombre y una clave estadística de todos los jugadores.\\
     Como opción se puede agregar una clave no estadística más, 'key', aparte de 'nombre' y seguida\\
     de éste. Luego ordena la lista de estadísticas obtenida de acuerdo a su única clave estadísitica.\\
     Por defecto, lo hace de manera ascendente. Toma el 'valor' float recibido por parámetro como\\
@@ -454,7 +454,7 @@ def ordenar_quick_sort_reducida(lista:list,
     un string 'key' (necesario), un booleano 'menor_a_mayor' (opcional) y un string\\
     'izq_o_der' (opcional)
     Retorno: una lista de diccionarios
-    Función: toma al 'valor' como pivot y appendea en la 'lista_derecha' todos los diccionarios\\
+    Descripción: toma al 'valor' como pivot y appendea en la 'lista_derecha' todos los diccionarios\\
     cuyos valores en la clave 'key' son mayores al pivot, si el booleano 'menor_a_mayor' es 'True',\\
     y en 'la lista_izquierda' los que son menores al pivot. Si 'menor_a_mayor' es 'False', los mayores\\
     al pivot quedarán en la 'lista_izquierda' y los menores en la 'lista_derecha'. La lista a retonar\\
@@ -484,7 +484,7 @@ def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     '''
     Parámetros: una lista de diccionarios
     Retorno: un string concatenado
-    Función: ordena la lista recibida por cantidad de logros de cada jugador,\\
+    Descripción: ordena la lista recibida por cantidad de logros de cada jugador,\\
     de manera ascendente. Guarda el último índice de la lista ordenada (o sea,\\
     la posición del jugador con más logros obtenidos) y con éste genera el string\\
     concatenado a retornar.
@@ -502,7 +502,7 @@ def ordenar_x_cantidad_de_logros(lista:list)->list:
     '''
     Parámetros: una lista de diccionarios (necesaria)
     Retorno: una lista de diccionarios
-    Función: ordena la lista recibida por párametro de manera ascendente según la\\
+    Descripción: ordena la lista recibida por párametro de manera ascendente según la\\
     clave 'logros' (lo hace, calculando la longitud de las listas-valor dentro de\\
     la clave 'logros' de cada jugador) y la retorna.
     '''
@@ -518,7 +518,7 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
     '''
     Parámetros: lista de diccionarios
     Retorno: un string informativo de una sola linea
-    Función: de la lista de jugadores, obtiene una nueva lista solo con los nombres\\
+    Descripción: de la lista de jugadores, obtiene una nueva lista solo con los nombres\\
     de cada jugador y todas sus claves estadísticas. Luego ordena esta última de\\
     manera ascendente de acuerdo a la 'key' estadística pasada por parámetro. El\\
     string 'tipo_dato' indica el tipo de dato a ser evaluado, en este caso, un valor\\
@@ -547,7 +547,7 @@ def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
     '''
     Parámetros: lista de diccionarios (necesaria) y un string 'key' (opcional)
     Retorno: una lista de diccionarios
-    Función: toma la lista de jugadores, la itera y extrae de cada jugador su\\
+    Descripción: toma la lista de jugadores, la itera y extrae de cada jugador su\\
     nombre y todas sus claves estadísticas, las guarda en un nuevo diccionario\\
     y lo appendea a la lista que será retornada. Como opción, puede incluir en\\
     cada jugador, una clave no estadística más 'key', aparte de 'nombre'.
@@ -569,7 +569,7 @@ def obtener_estadistica_x_key_all_dream_team(lista:list,key_estadistica:str,key:
     Parámetros: una lista de diccionarios (necesaria), un string 'key_estadistica'\\
     y otro string 'key' (opcional)
     Retorno: una lista de diccionarios
-    Función: obtiene una lista de jugadores con todas sus claves estadísticas.\\
+    Descripción: obtiene una lista de jugadores con todas sus claves estadísticas.\\
     Extrae de la misma, solo el nombre y la 'key_estadistica' pasada por parámetro.\\
     Con éstas crea un nuevo diccionario y lo appendea a la lista que será retornada.\\
     Repite este proceso por iteración de la lista obtenida al comienzo. Como opción,\\
@@ -592,7 +592,7 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     '''
     Parámetros: una lista de diccionarios (necesaria) y un booleano 'exclusion' (opcional)
     Retorno: un string informativo de una linea
-    Función: primero obtiene una nueva lista de jugadores con solo dos claves en cada uno:\\
+    Descripción: primero obtiene una nueva lista de jugadores con solo dos claves en cada uno:\\
     'nombre' y 'promedio_puntos_por_partido'. Luego ordena dicha lista de manera ascendente.\\
     Seguidamente puede excluir (o no) al jugador con el valor mínimo de la lista, de la clave\\
     en cuestión. Reordena la lista por nombre, calcula el promedio y genera la linea a retornar.
@@ -621,7 +621,7 @@ def calcular_promedio(lista:list,key:str)->float:
     '''
     Parámetros: lista de diccionarios (necesaria) y un string 'key' (necesario)
     Retorno: un valor tipo float
-    Función: recorre la lista de diccionarios y calcula el promedio de los valores\\
+    Descripción: recorre la lista de diccionarios y calcula el promedio de los valores\\
     de una de las claves de cada diccionario. En caso de no existir dicha clave dentro\\
     del diccionario, la omitirá en el denominador del promedio. En caso de que la clave\\
     no se encuentre en ningún diccionario, retornará -1.
@@ -645,7 +645,7 @@ def ordenar_bubble_sort(lista:list,
     Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario),\\
     un string 'key' (necesario) y un booleano 'flag_orden' (opcional)
     Retorno: no tiene
-    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de\\
+    Descripción: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de\\
     elementos. El string 'tipo_dato' debe ser representativo de tipo de valor a comparar\\
     en el ordenamiento. El string 'key' es opcional ya que la lista podría ser o no de\\
     diccionarios, es decir, podría requerir o no un clave a partir de la cual la lista\\
@@ -677,7 +677,7 @@ def retornar_tipo_dato(lista:list,
     Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un valor\\
     entero tipo entero (necesario) y un string 'key'(opcional)
     Retorno: una estructura sintáctica que representa un valor determinado (string, int o float)
-    Función: define una estructura sintáctica representativa de un valor determinado de acuerdo\\
+    Descripción: define una estructura sintáctica representativa de un valor determinado de acuerdo\\
     al string 'tipo_dato'. Los valores que toma este último son también representativos del tipo de\\
     estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde el\\
     valor de la clave del diccionario es un string. Esta función solo puede ser usada en iteraciones\\
@@ -695,7 +695,7 @@ def consultar_exportar_archivo(lista:list)->None:
     '''
     Parámetros: una lista de dos strings (necesaria)
     Retorno: no tiene
-    Función: consulta al usuario si desea guardar ciertos datos generados en un archivo\\
+    Descripción: consulta al usuario si desea guardar ciertos datos generados en un archivo\\
     csv. En caso afirmativo le pasa a la función 'guardar_archivo' el string de nombre\\
     de archivo y el string concatenado de datos recibidos por la lista, en ese orden.\\
     En caso negativo, imprime por terminal que se omitió la creación del archivo.
@@ -711,7 +711,7 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     '''
     Parámetros: una lista de diccionarios y un patrón tipo string (ambos necesarios)
     Retorno: un string concatenado
-    Función: a partir del 'pattern' obtiene una lista de jugadores cuyos nombres matchearon\\
+    Descripción: a partir del 'pattern' obtiene una lista de jugadores cuyos nombres matchearon\\
     con éste. Luego evalúa si el valor-string de la clave 'logros' tiene como substring al\\
     patrón 'Salon de la Fama', escrito con mayúscula y también con minúscula. Ya sea que el\\
     patrón 'Salon de la Fama' coincida o no, genera un string con el aviso de pertenencia o\\
@@ -735,7 +735,7 @@ def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
     '''
     Parámetros: una lista de diccionarios y un patrón tipo string (ambos necesarios)
     Retorno: una lista de diccionarios
-    Función: recibe la lista de jugadores, crea una nueva lista sólo con las claves\\
+    Descripción: recibe la lista de jugadores, crea una nueva lista sólo con las claves\\
     'nombre' y 'logros'. Luego evalúa por medio del 'pattern' recibido si el nombre\\
     de algún jugador coincide con el mismo. Si ocurre algún match dicho jugador se\\
     appendea a una nueva lista y se retorna. Caso contrario, retorna una lista vacía\\
@@ -756,7 +756,7 @@ def obtener_nombre_y_logros_all_dream_team(lista:list)->list:
     '''
     Parámetros: una lista de diccionarios (necesario)
     Retorno: una lista de diccionarios
-    Función: recibe la lista de jugadores, la itera y toma de cada jugador los valores\\
+    Descripción: recibe la lista de jugadores, la itera y toma de cada jugador los valores\\
     de las claves 'nombre' y 'logros' para asigárselos a las mismas claves pero en un\\
     nuevo diccionario. Al valor-lista de la clave 'logros' antes de incluirlo en el nuevo\\
     diccionario lo convierte en un string concatenado con el separador ' - '. Al nuevo\\
@@ -776,7 +776,7 @@ def seleccionar_jugador_por_nombre()->str:
     '''
     Parámetros: no requiere
     Retorno: un string
-    Función: solicita al usuario ingresar el nombre de un jugador,\\
+    Descripción: solicita al usuario ingresar el nombre de un jugador,\\
     y lo valida así: al menos 3 caracteres alfabéticos en minúscula o\\
     mayúscula. Si resulta válido lo retorna. En caso contrario imprime\\
     un aviso de error por terminal y devuelve un string vacío.
@@ -794,7 +794,7 @@ def seleccionar_indice_rango(lista:list,tipo:str)->int:
     '''
     Parámetros: una lista de diccionarios y un string (ambos necesarios)
     Retorno: un número entero
-    Función: solicita al usuario ingresar un número dentro de un\\
+    Descripción: solicita al usuario ingresar un número dentro de un\\
     intervalo predefinido, lo valida con regex, lo convierte a entero\\
     y lo retorna. Si el número ingresado no es válido retornará un - 1\\
     (tipo entero). El parámetro 'tipo' cambia el formato de la oración\\
@@ -816,7 +816,7 @@ def mostrar_estadisticas_por_indice_rango(lista:list,index_range:int=None,tipo:s
     Parámetros: una lista de diccionarios (necesaria), un entero (opcional) y un string\\
     (opcional)
     Retorno: un string concatenado con saltos de linea
-    Función: a partir de la lista de jugadores del Dream Team, crea una nueva lista
+    Descripción: a partir de la lista de jugadores del Dream Team, crea una nueva lista
     de jugadores (diccionarios) cuyas claves serán: el nombre del jugador más todas\\
     sus estadísticas (son todas las claves del diccionario de estadísticas dentro del\\
     diccionario/jugador). Luego esta nueva lista se puede recortar de acuerdo a los\\
@@ -841,7 +841,7 @@ def exportar_csv(lista:list)->None:
     Parámetros: una lista (necesaria) con dos elementos string:\\
     nombre del archivo y el dato a archivar, en ese orden
     Retorno: no tiene
-    Función: solicita al usuario ingresar un número dentro de un\\
+    Descripción: solicita al usuario ingresar un número dentro de un\\
     intervalo predefinido, lo pasa a una estructura de control 'match'
     y de allí obtiene una lista con dos elementos: nombre de archivo\\
     y dato string a archivar, en ese orden. Si dicha lista contiene\\
@@ -862,7 +862,7 @@ def seleccionar_opcion_a_guardar()->str:
     '''
     Parámetros: no requiere
     Retorno: un número entero en formato string
-    Función: solicita al usuario ingresar un número dentro de\\
+    Descripción: solicita al usuario ingresar un número dentro de\\
     un intervalo predefinido, lo valida y lo devuelve. En caso\\
     de ingresar un 'número' no admitido, imprime un aviso por\\
     terminal y devuelve el string '-1'
@@ -881,7 +881,7 @@ def leer_archivo_json(path_name_file:str,clave:str)->list:
     Parámetros: ruta del archivo (necesario), atributo principal (o sea,\\
     una lista) del archivo json (necesario)
     Retorno: una lista de diccionarios
-    Función: lee la información del archivo json para luego cargarla en\\
+    Descripción: lee la información del archivo json para luego cargarla en\\
     formato de lista de diccionarios
     '''
     lista_retorno = []
@@ -896,7 +896,7 @@ def guardar_archivo(name_file:str,new_data:str)->bool:
     Parámetros: nombre de archivo (necesario), datos a escribir (necesario)
     Retorno: booleano 'True' si el archivo se creó correctamente, y en caso\\
     contrario devuelve 'False'
-    Función: crea un archivo con la extensión indicada en 'name_file' cuyo\\
+    Descripción: crea un archivo con la extensión indicada en 'name_file' cuyo\\
     contenido será la información almacenada en 'new_data'. El modo de\\
     escritura es 'w+'.
     '''
@@ -916,7 +916,7 @@ def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->st
     Parámetros: lista de diccionarios (necesario), clave de diccionario (opcional),\\
     un rango de iteración tipo entero (opcional)
     Retorno: string concatenado
-    Función: recibe la lista, genera un encabezado con todas las claves del primer\\
+    Descripción: recibe la lista, genera un encabezado con todas las claves del primer\\
     diccionario, luego itera la lista y genera un string concatenado separado por\\
     un salto de línea. Cada linea contiene los valores de todas las claves de cada\\
     diccionario separados por una ',' (coma). Por defecto, la función itera todos los\\
@@ -940,7 +940,7 @@ def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
     Parámetros: lista de diccionarios (necesario), posición de un diccionario\\
     (necesario) y clave del diccionario (opcional)
     Retorno: string de valores de claves de una sola linea
-    Función: recibe la lista y la posición de uno de sus diccionarios. Luego\\
+    Descripción: recibe la lista y la posición de uno de sus diccionarios. Luego\\
     toma todos los valores de todas sus claves y los concatena en un solo\\
     string usando una ',' (coma) como separador. El parámetro opcional permite\\
     tomar los valores desde la primera clave hasta el valor de la clave indicada.
@@ -960,7 +960,7 @@ def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
     '''
     Parámetros: lista de diccionarios (necesario), clave del diccionario (opcional)
     Retorno: string de claves de una sola linea
-    Función: recibe la lista, toma todas las claves del primer diccionario y las\\
+    Descripción: recibe la lista, toma todas las claves del primer diccionario y las\\
     concatena en un solo string usando una ',' (coma) como separador. El parámetro\\
     opcional permite tomar las claves desde la primera hasta la clave indicada.
     '''
