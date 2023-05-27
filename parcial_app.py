@@ -450,9 +450,17 @@ def ordenar_quick_sort_reducida(lista:list,
                                 menor_a_mayor:bool=True,
                                 izq_o_der:str="der")->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria), un entero 'valor' (necesaria),\\
+    un string 'key' (necesario), un booleano 'menor_a_mayor' (opcional) y un string\\
+    'izq_o_der' (opcional)
+    Retorno: una lista de diccionarios
+    Función: toma al 'valor' como pivot y appendea en la 'lista_derecha' todos los diccionarios\\
+    cuyos valores en la clave 'key' son mayores al pivot, si el booleano 'menor_a_mayor' es 'True',\\
+    y en 'la lista_izquierda' los que son menores al pivot. Si 'menor_a_mayor' es 'False', los mayores\\
+    al pivot quedarán en la 'lista_izquierda' y los menores en la 'lista_derecha'. La lista a retonar\\
+    va a ser la 'lista_izquierda' o la 'lista_derecha' de acuerdo lo indicado por parámetro 'izq_o_der'\\
+    ('izq' o 'der' respectivemente). Por defecto, ordenará de manera ascendete y retornará la lista\\
+    derecha (o sea, todos los diccionarios con valores por clave son mayores al pivot).
     '''
     lista_retorno = []
     lista_izquierda = []
@@ -474,9 +482,12 @@ def ordenar_quick_sort_reducida(lista:list,
 
 def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios
+    Retorno: un string concatenado
+    Función: ordena la lista recibida por cantidad de logros de cada jugador,\\
+    de manera ascendente. Guarda el último índice de la lista ordenada (o sea,\\
+    la posición del jugador con más logros obtenidos) y con éste genera el string\\
+    concatenado a retornar.
     '''
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
     ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
@@ -488,6 +499,13 @@ def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
 
 
 def ordenar_x_cantidad_de_logros(lista:list)->list:
+    '''
+    Parámetros: una lista de diccionarios (necesaria)
+    Retorno: una lista de diccionarios
+    Función: ordena la lista recibida por párametro de manera ascendente según la\\
+    clave 'logros' (lo hace, calculando la longitud de las listas-valor dentro de\\
+    la clave 'logros' de cada jugador) y la retorna.
+    '''
     lista_copia = lista[:]
     ordenar_bubble_sort(lista_copia,"list_dict_len_key","logros")
     return lista_copia
@@ -498,9 +516,17 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
                                             key:str,
                                             max_min:str="mayor")->str:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: lista de diccionarios
+    Retorno: un string informativo de una sola linea
+    Función: de la lista de jugadores, obtiene una nueva lista solo con los nombres\\
+    de cada jugador y todas sus claves estadísticas. Luego ordena esta última de\\
+    manera ascendente de acuerdo a la 'key' estadística pasada por parámetro. El\\
+    string 'tipo_dato' indica el tipo de dato a ser evaluado, en este caso, un valor\\
+    numérico correspondiente a una clave estadística de un jugador-diccionario\\
+    dentro de una lista ('list_dict_num'). Por último, por medio del parámetro string\\
+    'max_min', selecciona al jugador con valor máximo ('mayor') de la 'key', o bien,\\
+    al jugador con el valor mínimo ('menor') de la misma. Con los datos del jugador\\
+    encontrado genera el string informativo a ser retornado.
     '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     ordenar_bubble_sort(lista_estadisticas,tipo_dato,key)
@@ -519,9 +545,12 @@ def mostrar_mayor_menor_x_clave_estadistica(lista:list,
 
 def obtener_nombre_key_y_todas_las_estadisticas(lista:list,key:str=None)->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: lista de diccionarios (necesaria) y un string 'key' (opcional)
+    Retorno: una lista de diccionarios
+    Función: toma la lista de jugadores, la itera y extrae de cada jugador su\\
+    nombre y todas sus claves estadísticas, las guarda en un nuevo diccionario\\
+    y lo appendea a la lista que será retornada. Como opción, puede incluir en\\
+    cada jugador, una clave no estadística más 'key', aparte de 'nombre'.
     '''
     lista_nombre_y_estadisticas = []
     for i in range(len(lista)):
@@ -619,10 +648,10 @@ def ordenar_bubble_sort(lista:list,
     Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de\\
     elementos. El string 'tipo_dato' debe ser representativo de tipo de valor a comparar\\
     en el ordenamiento. El string 'key' es opcional ya que la lista podría ser o no de\\
-    diccionarios, es decir, podría requerir o no un clave a partir de la cual necesite\\
-    ordena la lista. El booleano 'flag_orden' es por defecto 'True', o sea, está programado\\
-    para ordenar de manera ascendente (o menor a mayor), salvo que se indique lo\\
-    contrario asignándole 'False'.
+    diccionarios, es decir, podría requerir o no un clave a partir de la cual la lista\\
+    necesite ser ordenada la lista. El booleano 'flag_orden' es por defecto 'True', o sea\\
+    que por defecto va a ordenar de manera ascendente (o menor a mayor), salvo que\\
+    se indique lo contrario asignándole 'False'.
     '''
     rango = len(lista) 
     flag_swap = True
@@ -866,7 +895,7 @@ def guardar_archivo(name_file:str,new_data:str)->bool:
     '''
     Parámetros: nombre de archivo (necesario), datos a escribir (necesario)
     Retorno: booleano 'True' si el archivo se creó correctamente, y en caso\\
-    contrario devuelve 'False'\\
+    contrario devuelve 'False'
     Función: crea un archivo con la extensión indicada en 'name_file' cuyo\\
     contenido será la información almacenada en 'new_data'. El modo de\\
     escritura es 'w+'.
@@ -886,7 +915,7 @@ def mostrar_data_hasta_clave_rango(lista:list,clave:str=None,rango:int=None)->st
     '''
     Parámetros: lista de diccionarios (necesario), clave de diccionario (opcional),\\
     un rango de iteración tipo entero (opcional)
-    Retorno: string concatenado\\
+    Retorno: string concatenado
     Función: recibe la lista, genera un encabezado con todas las claves del primer\\
     diccionario, luego itera la lista y genera un string concatenado separado por\\
     un salto de línea. Cada linea contiene los valores de todas las claves de cada\\
@@ -910,7 +939,7 @@ def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
     '''
     Parámetros: lista de diccionarios (necesario), posición de un diccionario\\
     (necesario) y clave del diccionario (opcional)
-    Retorno: string de valores de claves\\
+    Retorno: string de valores de claves de una sola linea
     Función: recibe la lista y la posición de uno de sus diccionarios. Luego\\
     toma todos los valores de todas sus claves y los concatena en un solo\\
     string usando una ',' (coma) como separador. El parámetro opcional permite\\
@@ -930,7 +959,7 @@ def generar_linea_hasta_clave(lista:list,i:int,clave:str=None)->str:
 def generar_encabezado_hasta_clave(lista:list,clave:str=None)->str:
     '''
     Parámetros: lista de diccionarios (necesario), clave del diccionario (opcional)
-    Retorno: string de claves\\
+    Retorno: string de claves de una sola linea
     Función: recibe la lista, toma todas las claves del primer diccionario y las\\
     concatena en un solo string usando una ',' (coma) como separador. El parámetro\\
     opcional permite tomar las claves desde la primera hasta la clave indicada.
