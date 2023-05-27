@@ -16,8 +16,9 @@ def imprimir_dato(string:str):
 def imprimir_menu():
     '''
     Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Retorno: no tiene
+    Función: imprime por terminal el menú de opciones, el cual es un solo string\\
+    concatenado con saltos de linea.
     '''
     menu = "\n1° EXAMEN PARCIAL 1° CUATRIMESTRE - DREAM TEAM\n\n"\
     "1 - Mostrar todos los jugadores del Dream Team\n"\
@@ -57,7 +58,10 @@ def menu_principal()->str:
     '''
     Parámetros: no requiere
     Retorno: un string
-    Función: 
+    Función: imprime por terminal el menú de opciones, solicita al usuario\\
+    que ingrese la opción deseada (un entero tipo string) y la valida con regex\\
+    entre las opciones posibles del menú. En caso de ser válida, la retorna y si\\
+    no, retornará '-1' imprimiendo por terminal un aviso de error.
     '''
     imprimir_menu()
     opcion = input("Seleccione opción: ")
@@ -75,9 +79,14 @@ def continuar():
 
 def lanzar_app(lista:list):
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: lista de diccionarios (necesaria)
+    Retorno: no tiene
+    Función: recibe la lista de jugadores del Dream Team, ejecuta el menú\\
+    principal, solicita al usuario que ingrese una opción, la matchea y lanza\\
+    el match anidado que ejecutará la opción seleccionada. El último 'case' del\\
+    match principal queda reservado para la opción de 'exportar a csv'. Asimismo,\\
+    la opción '0' detiene la iteración de todo lo anterior, es decir, sale de la\\
+    aplicación.
     '''
     while True:
         opcion_seleccionada = menu_principal()
@@ -94,9 +103,18 @@ def lanzar_app(lista:list):
 
 def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: lista de diccionarios (necesaria), un entero tipo string 'opcion'\\
+    (necesaria) y un booleano 'exportar' (opcional)
+    Retorno: una lista de dos elementos tipo string
+    Función: ejecuta todas las opciones del menú, excepto las opciones '0' y última\\
+    que quedan reservadas para el match principal. Cada 'case' ejecutado genera dos
+    strings: un nombre de archivo y uno de datos (string concatenado). Al finalizar\\
+    la ejecución del 'case' ambos serán almacenados en una lista, en ese orden, para\\
+    ser retornada. En caso que el string de datos termine la ejecución del 'case' como\\
+    un string vacío todo lo anterior se omite y la lista retornada es vacía. El booleano\\
+    opcional 'exportar' permite, en ciertos 'case', consultar al usuario si desea guardar\\
+    los datos obtenidos como csv. Esto lo hace por defecto para dichos casos. Cuando\\
+    su valor es 'True' bloquea todo lo anterior.
     '''
     lista_nombre_dato = []
     dato = ""
@@ -293,7 +311,7 @@ def consultar_imprimir_con_formato()->bool:
     if re.match("^S$",consulta):
         pass
     else:
-        imprimir_dato("Se omitió opción de imprimir datos con formato\n")
+        imprimir_dato("Se omitió impresión con formato\n")
         flag_consulta = False
     return flag_consulta
 
@@ -523,14 +541,17 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
 
 def calcular_promedio(lista:list,key:str)->float:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: lista de diccionarios (necesaria) y un string 'key' (necesario)
+    Retorno: un valor tipo float
+    Función: recibe una lista de diccionario, la recorre y calcula el promedio\\
+    de los valores de una de las claves de cada diccionario. En caso de no existir\\
+    dicha clave dentro del diccionario, la omitirá en el denominador del promedio.\\
+    En caso de que la clave no se encuentre en ningún diccionario, retornará -1.
     '''
     contador = 0
     acumulador = 0
     for diccio in lista:
-        if key in diccio and (type(diccio[key]) == int or type(diccio[key]) == float):
+        if key in diccio and (type(diccio[key]) == type(int) or type(diccio[key]) == type(float)):
             acumulador += diccio[key]
             contador += 1
     if contador > 0: promedio = acumulador / contador
@@ -576,7 +597,7 @@ def retornar_tipo_dato(lista:list,
     al string 'tipo_dato'. Los valores que toma este último son también representativos del tipo de\\
     estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde el\\
     valor de la clave del diccionario es un string. Esta función solo puede ser usada en iteraciones\\
-    de for, pues el segundo parámetro necesario es el índice 'i' de la lista. El parámetro 'key' se\\
+    de 'for', pues el segundo parámetro necesario es el índice 'i' de la lista. El parámetro 'key' se\\
     puede omitir, solo será necesario para recorrer una determinada clave de los diccionarios de\\
     una de una lista de diccionarios.
     '''
