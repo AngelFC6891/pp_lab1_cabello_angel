@@ -351,9 +351,19 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
 
 def obtener_todos_los_ranking_por_jugador(lista:list)->list:
     '''
-    Parámetros: una lista de diccionarios (necesarios)
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesaria)
+    Retorno: una lista de diccionarios
+    Función: primero obtiene una lista de diccionarios con el nombre del jugador y todas\\
+    sus estadísticas. Luego itera la lista de claves estadísticas de interés para generar\\
+    el ranking. Por cada clave iterada, ordena la lista de estadísticas según esta última,\\
+    de manera descendente. A continuación recorre la lista reordenada. Utiliza un contador\\
+    'ranking'. Dado que la lista esta reordenada de manera descendente, el primer jugador\\
+    de la lista es el numero uno de este ranking como indica el contador. Guarda los nombres\\
+    de todos los jugadores cada uno en un diccionario distinto, más la primer clave estadística\\
+    con su respectivo valor de ranking. Todos estos diccionaros son appendeados a una lista\\
+    retorno. Repite el proceso para las siguientes pasadas, pero para cada clave estadística\\
+    recorre la lista retorno para hallar el jugador que está primero en el ranking en la clave\\
+    actual y así siguiendo.
     '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
     lista_claves = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
@@ -381,10 +391,13 @@ def obtener_todos_los_ranking_por_jugador(lista:list)->list:
 def ingresar_y_validar_valor()->float:
     '''
     Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Retorno: un valor tipo float
+    Función: solicita al usuario ingresar un valor mayor que 1 que puede ser int o float.\\
+    Luego lo valido con regex. Si cumple la validación lo retorna castéandolo a float. Caso\\
+    contrario, retornará -1.0 e imprimirá un aviso por terminal informando que el valor no\\
+    es válido.
     '''
-    valor = input("Ingrese un valor mayor que 0: ")
+    valor = input("Ingrese un valor mayor que 1: ")
     if re.match(r"[1-9]|[1-9]+\.[0-9][0-9]|[1-9][0-9]+|[1-9][0-9]+\.[0-9][0-9]",valor):
         valor = float(valor)
     else:
@@ -582,7 +595,11 @@ def ordenar_bubble_sort(lista:list,
     Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un string 'key'\\
     (necesario) y un booleano 'flag_orden' (opcional)
     Retorno: no tiene
-    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de elementos. 
+    Función: ordena la lista recibida de acuerdo a un criterio de swap (intercambio) de elementos. El string\\
+    'tipo_dato' debe ser representativo de tipo de valor a comparar en el ordenamiento. El string 'key' es\\
+    opcional ya que la lista podría ser o no de diccionarios, es decir, podría requerir o no un clave a partir\\
+    de la cual necesite ordena la lista. El booleano 'flag_orden' es por defecto 'True', o sea, está programado\\
+    para ordenar de manera ascendente (o menor a mayor), salvo que se indique lo contrario asignándole 'False'.
     '''
     rango = len(lista) 
     flag_swap = True
@@ -712,7 +729,7 @@ def seleccionar_jugador_por_nombre()->str:
     mayúscula. Si resulta válido lo retorna. En caso contrario imprime\\
     un aviso de error por terminal y devuelve un string vacío.
     '''
-    nombre = input("Escribir nombre de jugador: ")
+    nombre = input("Ingrese el nombre del jugador: ")
     patron = ""
     if re.match(r"^[A-Za-z]{3}",nombre):
         patron = nombre
