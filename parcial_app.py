@@ -1,6 +1,5 @@
 import re
 import json
-import pprint
 
 '''
 Tema: EXAMEN PARCIAL 1° CUATRIMESTRE
@@ -123,6 +122,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     imprimir_con_formato = False
     match opcion:
         case "1":
+            ordenar_bubble_sort(lista,"list_dict_str","nombre")
             dato = mostrar_data_hasta_clave_rango(lista,"posicion")
             imprimir_con_formato = consultar_imprimir_con_formato()
         case "2":
@@ -227,18 +227,16 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             valor = ingresar_y_validar_valor()
             if valor != -1.0:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
-                                                                                        valor,
-                                                                                        "porcentaje_tiros_de_campo",
-                                                                                        True,
-                                                                                        "der",
-                                                                                        "posicion")
+                                                                                            valor,
+                                                                                            "porcentaje_tiros_de_campo",
+                                                                                            True,
+                                                                                            "der",
+                                                                                            "posicion")
                 lista_reordenada = obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista_promedios,
                                                                                         "porcentaje_tiros_de_campo",
                                                                                         "posicion",
                                                                                         "list_dict_num",
-                                                                                        "list_dict_str",
-                                                                                        True,
-                                                                                        True)
+                                                                                        "list_dict_str")
                 if lista_promedios != []:
                     dato = mostrar_data_hasta_clave_rango(lista_reordenada)
                     imprimir_con_formato = consultar_imprimir_con_formato()
@@ -271,7 +269,7 @@ def imprimir_dato_con_formato(string:str)->str:
     Particiona el string recibido primero por salto de linea y luego por coma.\\
     Itera las listas correspondientes, y le asigna a cada subtring del encabezado
     su valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es\\
-    concatenado con un salto de línea. Al finalizar la asignación de valores almacena\\
+    concatenado con un separador. Al finalizar la asignación de valores almacena\\
     el string en una lista. Repite el proceso con cada linea, y al finalizar concatena\\
     todos los string de la lista con un salto de linea. Por último, imprime el string\\
     resultante.
@@ -283,28 +281,35 @@ def imprimir_dato_con_formato(string:str)->str:
         lista_encabezados = re.split(",",lista_lineas[1])
         rango = range(2,len(lista_lineas))
     dato_retorno = ""
+    dato = ""
     lista_datos_formateados = []
     for i in rango:
         lista_datos = re.split(",",lista_lineas[i])
         dato_formateado = ""
         for j in range(len(lista_datos)):
-            dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            if j != len(lista_datos) - 1: dato_formateado = "{0}{1} - ".format(dato_formateado,dato)
-            elif j == len(lista_datos) - 1:
+            if j == 0 and dato == "": dato = "\n{0}: {1}".format(lista_encabezados[j],lista_datos[j])
+            else: dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
+            if len(lista_encabezados) <= 3: separador = " - "
+            else: separador = "\n"
+            if j != len(lista_datos) - 1: dato_formateado = "{0}{1}{2}".format(dato_formateado,dato,separador)
+            else:
                 if i != len(lista_lineas) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
                 else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
         lista_datos_formateados.append(dato_formateado)
     dato_retorno = "".join(lista_datos_formateados[:])
     if len(re.split(",",lista_lineas[0])) == 1:
-        dato_retorno = "\n{0}\n\n{1}".format(lista_lineas[0],dato_retorno)
+        dato_retorno = "\n{0}\n{1}".format(lista_lineas[0],dato_retorno)
     imprimir_dato(dato_retorno)
 
 
 def consultar_imprimir_con_formato()->bool:
     '''
     Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Retorno: un booleano
+    Función: consulta al usuario por terminal si desea imprimir los datos obtenidos\\
+    con un formato distinto al formato de guardado csv. En caso que el usuario\\
+    acepte devuelve 'True' y si no, 'False'. En este último caso, también se imprime\\
+    po terminal un aviso de opción omitida.
     '''
     consulta = input("Desea desea imprimir datos con formato? (S/N): ")
     flag_consulta = True
@@ -321,8 +326,18 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
                                                            key_dos:str,
                                                            tipo_dato_uno:str,
                                                            tipo_dato_dos:str,
-                                                           flag_uno:bool,
-                                                           flag_dos:bool)->list:
+                                                           flag_uno:bool=True,
+                                                           flag_dos:bool=True)->list:
+    '''
+    Parámetros: una lista de diccionarios donde cada diccionario, además de la clave\\
+    'nombre', debe tener al menos una clave estadística y otra no estadística tipo string,\\
+    float o int; dos string 'key', dos string 'tipo_dato' y dos booleanos 'flag' (todos\\
+    paramétros necesarios excepto los 'flag' de ordenamiento)
+    Retorno: la misma lista recibida pero reordenada
+    Función: reordena la lista recibida, primero según de la clave estadística y luego\\
+    según la clave no estadística. Los parámetros restantes determinan el tipo de dato a\\
+    ordenar y el tipo de ordanamiento, ascendente ('True') o descendente ('False').
+    '''
     ordenar_bubble_sort(lista,
                         tipo_dato_uno,
                         key_uno,
@@ -336,7 +351,7 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
 
 def obtener_todos_los_ranking_por_jugador(lista:list)->list:
     '''
-    Parámetros: no requiere
+    Parámetros: una lista de diccionarios (necesarios)
     Retorno: un string
     Función: 
     '''
@@ -551,7 +566,7 @@ def calcular_promedio(lista:list,key:str)->float:
     contador = 0
     acumulador = 0
     for diccio in lista:
-        if key in diccio and (type(diccio[key]) == type(int) or type(diccio[key]) == type(float)):
+        if key in diccio and (type(diccio[key]) == int or type(diccio[key]) == float):
             acumulador += diccio[key]
             contador += 1
     if contador > 0: promedio = acumulador / contador
@@ -599,7 +614,7 @@ def retornar_tipo_dato(lista:list,
     valor de la clave del diccionario es un string. Esta función solo puede ser usada en iteraciones\\
     de 'for', pues el segundo parámetro necesario es el índice 'i' de la lista. El parámetro 'key' se\\
     puede omitir, solo será necesario para recorrer una determinada clave de los diccionarios de\\
-    una de una lista de diccionarios.
+    una lista de diccionarios.
     '''
     if tipo_dato == "list_dict_str": dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num": dato = lista[i][key]
@@ -616,7 +631,7 @@ def consultar_exportar_archivo(lista:list)->None:
     de archivo y el string concatenado de datos recibidos por la lista, en ese orden.\\
     En caso negativo, imprime por terminal que se omitió la creación del archivo.
     '''
-    consulta = input("Desea exportar los resultados a .csv? (S/N): ")
+    consulta = input("\nDesea exportar los resultados a .csv? (S/N): ")
     if re.match("^S$",consulta):
         guardar_archivo(lista[0],lista[1])
     else:
