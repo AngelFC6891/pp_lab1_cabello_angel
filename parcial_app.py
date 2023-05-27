@@ -264,15 +264,16 @@ def imprimir_dato_con_formato(string:str)->str:
     Parámetro: string concatenado (necesario)
     Retorno: string concatenado
     Función: recibe un string concatenado con saltos de línea cuya primera linea\\
-    es el encabezado y las demás, los datos en el mismo orden que en el encabezado\\
+    es el encabezado (también puede no serlo pero la función está preparada para\\
+    salvar esa situación) y las demás, los datos en el mismo orden que en el encabezado\\
     (tipo tabla excel). Las lineas de datos a su vez, están concatenadas con comas.\\
     Particiona el string recibido primero por salto de linea y luego por coma.\\
     Itera las listas correspondientes, y le asigna a cada subtring del encabezado
     su valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es\\
     concatenado con un separador. Al finalizar la asignación de valores almacena\\
     el string en una lista. Repite el proceso con cada linea, y al finalizar concatena\\
-    todos los string de la lista con un salto de linea. Por último, imprime el string\\
-    resultante.
+    todos los string de la lista con un salto de linea como separador. Por último,\\
+    imprime el string resultante.
     '''
     lista_lineas = re.split("\n",string)
     lista_encabezados = re.split(",",lista_lineas[0])
@@ -409,13 +410,24 @@ def ingresar_y_validar_valor()->float:
 def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
                                                               valor:float,
                                                               key_estadistica:str,
-                                                              menor_a_mayor:bool=True,
+                                                              ascdt:bool=True,
                                                               izq_o_der:str="der",
                                                               key:str=None)->list:
     '''
-    Parámetros: no requiere
-    Retorno: un string
-    Función: 
+    Parámetros: una lista de diccionarios (necesario), un float 'valor' (necesario), un string\\
+    'key_estadistica' (necesario), un booleano 'ascdt'(opcional), un string 'izq_o_der' (opcional)\\
+    y otro string 'key' (opcional)
+    Retorno: una lista de diccionarios
+    Función: primero obtiene una lista con el nombre y una clave estadística de todos los jugadores.\\
+    Como opción se puede agregar una clave no estadística más, 'key', aparte de 'nombre' y seguida\\
+    de éste. Luego ordena la lista de estadísticas obtenida de acuerdo a su única clave estadísitica.\\
+    Por defecto, lo hace de manera ascendente. Toma el 'valor' float recibido por parámetro como\\
+    pivot y lo utiliza para encontrar los valores mayores o menores al mismo. Cuando finaliza obtiene\\
+    una lista, que puede ser la lista de valores a la izquierda o a la derecha del pivot (menores o\\
+    mayores respectivamente). Por defecto toma la lista de la derecha, que es lista que retorna. Si\\
+    ocurre que el pivot recibido es mayor que el máximo valor de la clave estadística que hay en la\\
+    lista, el proceso antes mencionado se interrumpe y avisa por terminal que el pivot es mayor a ese\\
+    valor máximo. Entonces retornará una lista vacía.
     '''
     lista_retorno = []
     lista_estadisticas = obtener_estadistica_x_key_all_dream_team(lista,key_estadistica,key)
@@ -425,7 +437,7 @@ def obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista:list,
         lista_retorno = ordenar_quick_sort_reducida(lista_estadisticas,
                                                     valor,
                                                     key_estadistica,
-                                                    menor_a_mayor,
+                                                    ascdt,
                                                     izq_o_der)
     else:
         imprimir_dato("El valor ingresado supera el máximo {0}. Inténtelo nuevamente".format(maximo))
