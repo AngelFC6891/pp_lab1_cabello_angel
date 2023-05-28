@@ -305,7 +305,7 @@ def generar_dato_formateado(lista_headline:list,lista_lines:list,rango:int):
                 else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
         lista_datos_formateados.append(dato_formateado)
     dato_retorno = "".join(lista_datos_formateados[:])
-    if primer_index != 0: dato_retorno = "\n{0}\n{1}".format("\n".join(lista_lines[:primer_index-1]),dato_retorno)
+    if primer_index != 1: dato_retorno = "\n{0}\n{1}".format("\n".join(lista_lines[:primer_index-1]),dato_retorno)
     return dato_retorno
 
 
