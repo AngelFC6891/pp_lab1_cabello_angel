@@ -466,9 +466,9 @@ def ordenar_quick_sort_reducida(lista:list,
     cuyos valores en la clave 'key' son mayores al pivot, si el booleano 'menor_a_mayor' es 'True',\\
     y en 'la lista_izquierda' los que son menores al pivot. Si 'menor_a_mayor' es 'False', los mayores\\
     al pivot quedarán en la 'lista_izquierda' y los menores en la 'lista_derecha'. La lista a retonar\\
-    va a ser la 'lista_izquierda' o la 'lista_derecha' de acuerdo lo indicado por parámetro 'izq_o_der'\\
+    va a ser la 'lista_izquierda' o la 'lista_derecha' de acuerdo a lo indicado por parámetro 'izq_o_der'\\
     ('izq' o 'der' respectivemente). Por defecto, ordenará de manera ascendete y retornará la lista\\
-    derecha (o sea, todos los diccionarios con valores por clave son mayores al pivot).
+    derecha (o sea, todos los diccionarios con valores por clave que son mayores al pivot).
     '''
     lista_retorno = []
     lista_izquierda = []
