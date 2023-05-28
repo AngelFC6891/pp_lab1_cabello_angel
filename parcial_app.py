@@ -125,12 +125,13 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             ordenar_bubble_sort(lista,"list_dict_str","nombre")
             dato = mostrar_data_hasta_clave_rango(lista,"posicion")
             imprimir_con_formato = consultar_imprimir_con_formato()
+            nombre_archivo = "nombre_posicion_all_dream_team.csv"
         case "2":
             i_r = seleccionar_indice_rango(lista,"i")
             if i_r != -1:
                 dato = mostrar_estadisticas_por_indice_rango(lista,i_r,"i")
                 imprimir_con_formato = consultar_imprimir_con_formato()
-                nombre_archivo = "estadisticas_de_jugador_indice_{0}.csv".format(i_r)
+                nombre_archivo = "estadisticas_de_jugador_posicion_{0}_de_la_lista.csv".format(i_r)
                 opcion_exportar = opcion
         case "3":
             patron_nombre = seleccionar_jugador_por_nombre()
@@ -160,17 +161,17 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "9":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                             valor,
                                                                                             "promedio_puntos_por_partido",
                                                                                             True,
                                                                                             "der")
                 dato = mostrar_data_hasta_clave_rango(lista_promedios)
-                nombre_archivo = "promedios_puntos_por_partido_mayores_a_{0}.csv".format(valor)
+                nombre_archivo = "promedios_puntos_por_partido_mayores_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "10":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
                                                                                         "rebotes_totales",
@@ -180,7 +181,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                 nombre_archivo = "promedios_rebotes_totales_mayores_a_{0}.csv".format(valor)
         case "11":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
                                                                                         "asistencias_totales",
@@ -196,14 +197,14 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "14":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
                                                                                         "porcentaje_tiros_libres",
                                                                                         True,
                                                                                         "der")
                 dato = mostrar_data_hasta_clave_rango(lista_promedios)
-                nombre_archivo = "promedios_porcentaje_tiros_libres_mayor_a_{0}.csv".format(valor)
+                nombre_archivo = "promedios_porcentaje_tiros_libres_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "15":
             dato = mostrar_promedios_de_puntos_x_partido(lista,True)
             nombre_archivo = "promedio_puntos_por_partido_con_exclusion.csv"
@@ -213,20 +214,20 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
         case "17":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
                                                                                         "porcentaje_tiros_triples",
                                                                                         True,
                                                                                         "der")
                 dato = mostrar_data_hasta_clave_rango(lista_promedios)
-                nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(valor)
+                nombre_archivo = "promedios_porcentaje_tiros_triples_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "18":
             dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
             nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
         case "19":
             valor = ingresar_y_validar_valor()
-            if valor != -1.0:
+            if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                             valor,
                                                                                             "porcentaje_tiros_de_campo",
@@ -241,7 +242,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                 if lista_promedios != []:
                     dato = mostrar_data_hasta_clave_rango(lista_reordenada)
                     imprimir_con_formato = consultar_imprimir_con_formato()
-                    nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(valor)
+                    nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "20":
             lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista)
             dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
@@ -249,7 +250,9 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             opcion_exportar = opcion
 
     if dato != "":
-        if imprimir_con_formato == False: imprimir_dato(dato)
+        if imprimir_con_formato == False:
+            if dato[0] == "\n": imprimir_dato(dato)
+            else: imprimir_dato(f"\n{dato}")
         else: imprimir_dato_con_formato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
@@ -262,17 +265,11 @@ def imprimir_dato_con_formato(string:str)->str:
     '''
     Parámetro: string concatenado (necesario)
     Retorno: string concatenado
-    Descripción: recibe un string concatenado con saltos de línea cuya primera linea\\
-    es el encabezado (también puede no serlo pero la función está preparada para\\
+    Descripción: recibe un string concatenado con saltos de línea cuya primera\\
+    linea es el encabezado (también puede no serlo pero la función está preparada para\\
     salvar esa situación) y las demás, los datos en el mismo orden que en el encabezado\\
-    (tipo tabla excel). Las lineas de datos a su vez, están concatenadas con comas.\\
-    Particiona el string recibido primero por salto de linea y luego por coma.\\
-    Itera las listas correspondientes, y le asigna a cada subtring del encabezado
-    su valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es\\
-    concatenado con un separador. Al finalizar la asignación de valores almacena\\
-    el string en una lista. Repite el proceso con cada linea, y al finalizar concatena\\
-    todos los string de la lista con un salto de linea como separador. Por último,\\
-    imprime el string resultante.
+    (como filas de una tabla excel). Las lineas de datos a su vez, están concatenadas\\
+    con comas. Reformatea el string y lo devuelve.
     '''
     lista_lineas = re.split("\n",string)
     lista_encabezado = re.split(",",lista_lineas[0])
@@ -286,7 +283,19 @@ def imprimir_dato_con_formato(string:str)->str:
     imprimir_dato(dato_retorno)
 
 
-def generar_dato_formateado(lista_headline:list,lista_lines:list,rango:int):
+def generar_dato_formateado(lista_headline:list,lista_lines:list,rango:int)->str:
+    '''
+    Parámetro: una lista 'headline' de strings (necesaria), una lista 'lines' de strings\\
+    concatenados (necesaria), un iterable de índices 'rango' (necesario)
+    Retorno: string concatenado
+    Descripción: a partir del iterable 'rango' recorre ambas listas. Primero va generando una\\
+    lista de datos por cada linea de datos. Luego, a cada string del encabezado le asigna su
+    valor correspondiente en un nuevo string. Cada string tipo 'clave: valor', es concatenado\\
+    con un separador. Al finalizar la asignación de valores almacena el string en una lista de\\
+    datos formateados. Repite el proceso con cada linea, y al finalizar concatena todos los\\
+    string de la lista de datos formateados con un salto de linea como separador. Por último,\\
+    imprime el string resultante.
+    '''
     dato = ""
     dato_retorno = ""
     lista_datos_formateados = []
@@ -401,15 +410,15 @@ def ingresar_y_validar_valor()->float:
     Retorno: un valor tipo float
     Descripción: solicita al usuario ingresar un valor mayor que 1 que puede ser int o float.\\
     Luego lo valido con regex. Si cumple la validación lo retorna castéandolo a float. Caso\\
-    contrario, retornará -1.0 e imprimirá un aviso por terminal informando que el valor no\\
+    contrario, retornará -1 e imprimirá un aviso por terminal informando que el valor no\\
     es válido.
     '''
-    valor = input("Ingrese un valor mayor que 1: ")
+    valor = input("Ingrese un valor: ")
     if re.match(r"[1-9]$|[1-9]+\.[0-9][0-9]$|[1-9][0-9]+$|[1-9][0-9]+\.[0-9]{1}$|[1-9][0-9]+\.[0-9]{2}$",valor):
         valor = float(valor)
     else:
         imprimir_dato("Valor no válido. Inténtelo nuevamente")
-        valor = -1.0
+        valor = float(-1)
     return valor
 
 
@@ -497,7 +506,7 @@ def mostrar_jugador_con_mayor_cant_logros(lista:list)->str:
     '''
     lista_ordenada_x_cant_logros = ordenar_x_cantidad_de_logros(lista)
     ultimo_indice = len(lista_ordenada_x_cant_logros) - 1
-    dato = "\nEl jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
+    dato = "El jugador con MAYOR cantidad de logros es: {0}, con {1} logros\n{2}".format(
         lista_ordenada_x_cant_logros[ultimo_indice]["nombre"],
         len(lista_ordenada_x_cant_logros[ultimo_indice]["logros"]),
         "\n".join(lista_ordenada_x_cant_logros[ultimo_indice]["logros"][:]))
@@ -706,7 +715,7 @@ def consultar_exportar_archivo(lista:list)->None:
     En caso negativo, imprime por terminal que se omitió la creación del archivo.
     '''
     consulta = input("\nDesea exportar los resultados a .csv? (S/N): ")
-    if re.match("^S$",consulta):
+    if re.match("S$|s$",consulta):
         guardar_archivo(lista[0],lista[1])
     else:
         imprimir_dato("Se omitió creación de archivo")
@@ -728,11 +737,14 @@ def mostrar_jugador_salon_de_la_fama(lista:list,pattern:str)->str:
     if lista_logros_jugador != []:
         patron = "Salon de la Fama"
         flag_pertenece = False
-        if re.search(r"{0}|{1}".format(patron,patron.lower()),lista_logros_jugador[0]["logros"]):
-            flag_pertenece = True
-        if flag_pertenece == True: substring = "es"
-        else: substring = "NO es"
-        dato = "{0} {1} Miembro del {2} del Baloncesto".format(lista_logros_jugador[0]["nombre"],substring,patron)
+        for diccio in lista_logros_jugador:
+            if re.search(r"{0}|{1}".format(patron,patron.lower()),diccio["logros"]):
+                flag_pertenece = True
+            if flag_pertenece == True: substring = "es"
+            else: substring = "NO es"
+            if dato == "": separador = dato
+            else: separador = "\n"
+            dato = "{0}{1}{2} {3} Miembro del {4} del Baloncesto".format(dato,separador,diccio["nombre"],substring,patron)
     return dato
 
 
@@ -749,8 +761,8 @@ def obtener_nombre_y_logros_x_jugador(lista:list,pattern:str)->list:
     lista_nombre_logros = obtener_nombre_y_logros_all_dream_team(lista)
     lista_retorno = []
     for diccio in lista_nombre_logros:
-        if re.search(r"{0}".format(pattern),diccio["nombre"]) or\
-            re.search(r"{0}".format(pattern),diccio["nombre"].lower()):
+        if re.findall(r"{0}".format(pattern),diccio["nombre"]) or\
+            re.findall(r"{0}".format(pattern),diccio["nombre"].lower()):
             lista_retorno.append(diccio)
     if lista_retorno == []:
         imprimir_dato("No se encontraron coincidencias. Inténtelo nuevamente")
@@ -905,7 +917,7 @@ def guardar_archivo(name_file:str,new_data:str)->bool:
     contenido será la información almacenada en 'new_data'. El modo de\\
     escritura es 'w+'.
     '''
-    with open(name_file,"w+") as file:
+    with open(name_file,"w+",encoding="utf-8") as file:
         bytes = file.write(new_data)
         flag_guardado = True
     if bytes == 0:
