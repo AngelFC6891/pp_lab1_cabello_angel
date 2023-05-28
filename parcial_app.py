@@ -207,6 +207,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         case "15":
             dato = mostrar_promedios_de_puntos_x_partido(lista,True)
             nombre_archivo = "promedio_puntos_por_partido_con_exclusion.csv"
+            imprimir_con_formato = consultar_imprimir_con_formato()
         case "16":
             dato = mostrar_jugador_con_mayor_cant_logros(lista)
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
@@ -276,31 +277,38 @@ def imprimir_dato_con_formato(string:str)->str:
     imprime el string resultante.
     '''
     lista_lineas = re.split("\n",string)
-    lista_encabezados = re.split(",",lista_lineas[0])
+    lista_encabezado = re.split(",",lista_lineas[0])
     rango = range(1,len(lista_lineas))
-    if len(lista_encabezados) == 1:
-        lista_encabezados = re.split(",",lista_lineas[1])
-        rango = range(2,len(lista_lineas))
-    dato_retorno = ""
+    contador = 0
+    while len(lista_encabezado) < 2:
+        contador += 1
+        lista_encabezado = re.split(",",lista_lineas[contador])
+        rango = range(contador+1,len(lista_lineas))
+    dato_retorno = generar_dato_formateado(lista_encabezado,lista_lineas,rango)
+    imprimir_dato(dato_retorno)
+
+
+def generar_dato_formateado(lista_headline:list,lista_lines:list,rango:int):
     dato = ""
+    dato_retorno = ""
     lista_datos_formateados = []
     for i in rango:
-        lista_datos = re.split(",",lista_lineas[i])
+        if dato == "": primer_index = i
+        lista_datos = re.split(",",lista_lines[i])
         dato_formateado = ""
         for j in range(len(lista_datos)):
-            if j == 0 and dato == "": dato = "\n{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            else: dato = "{0}: {1}".format(lista_encabezados[j],lista_datos[j])
-            if len(lista_encabezados) <= 3: separador = " -> "
+            if j == 0 and dato == "": dato = "\n{0}: {1}".format(lista_headline[j],lista_datos[j])
+            else: dato = "{0}: {1}".format(lista_headline[j],lista_datos[j])
+            if len(lista_headline) <= 3: separador = " -> "
             else: separador = "\n"
             if j != len(lista_datos) - 1: dato_formateado = "{0}{1}{2}".format(dato_formateado,dato,separador)
             else:
-                if i != len(lista_lineas) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
+                if i != len(lista_lines) - 1: dato_formateado = "{0}{1}\n".format(dato_formateado,dato)
                 else: dato_formateado = "{0}{1}".format(dato_formateado,dato)
         lista_datos_formateados.append(dato_formateado)
     dato_retorno = "".join(lista_datos_formateados[:])
-    if len(re.split(",",lista_lineas[0])) == 1:
-        dato_retorno = "\n{0}\n{1}".format(lista_lineas[0],dato_retorno)
-    imprimir_dato(dato_retorno)
+    if primer_index != 0: dato_retorno = "\n{0}\n{1}".format("\n".join(lista_lines[:primer_index-1]),dato_retorno)
+    return dato_retorno
 
 
 def consultar_imprimir_con_formato()->bool:
@@ -399,7 +407,7 @@ def ingresar_y_validar_valor()->float:
     es válido.
     '''
     valor = input("Ingrese un valor mayor que 1: ")
-    if re.match(r"[1-9]|[1-9]+\.[0-9][0-9]|[1-9][0-9]+|[1-9][0-9]+\.[0-9][0-9]",valor):
+    if re.match(r"[1-9]$|[1-9]+\.[0-9][0-9]$|[1-9][0-9]+$|[1-9][0-9]+\.[0-9]{1}$|[1-9][0-9]+\.[0-9]{2}$",valor):
         valor = float(valor)
     else:
         imprimir_dato("Valor no válido. Inténtelo nuevamente")
@@ -606,8 +614,8 @@ def mostrar_promedios_de_puntos_x_partido(lista:list,exclusion:bool=False)->str:
     if exclusion == True:
         diccio_excluido = lista_promedios_de_puntos_x_partido[0]
         lista_promedios_de_puntos_x_partido.pop(0)
-        dato_excluido = "Excluido: {0},{1}\n".format(diccio_excluido["nombre"],
-                                                     diccio_excluido["promedio_puntos_por_partido"])
+        dato_excluido = "Excluido: {0} -> Promedio puntos por partido: {1}\n".format(diccio_excluido["nombre"],
+                                                                                     diccio_excluido["promedio_puntos_por_partido"])
     ordenar_bubble_sort(lista_promedios_de_puntos_x_partido,
                         "list_dict_str",
                         "nombre")
@@ -674,16 +682,15 @@ def retornar_tipo_dato(lista:list,
                        i:int,
                        key:str=None)->None:
     '''
-    Parámetros: una lista de diccionarios (necesaria), un string 'tipo_dato' (necesario), un valor\\
+    Parámetros: una lista (necesaria), un string 'tipo_dato' (necesario), un valor\\
     entero tipo entero (necesario) y un string 'key'(opcional)
-    Retorno: una estructura sintáctica que representa un valor determinado (string, int o float)
-    Descripción: define una estructura sintáctica representativa de un valor determinado de acuerdo\\
-    al string 'tipo_dato'. Los valores que toma este último son también representativos del tipo de\\
-    estructura a retornar. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde el\\
-    valor de la clave del diccionario es un string. Esta función solo puede ser usada en iteraciones\\
-    de 'for', pues el segundo parámetro necesario es el índice 'i' de la lista. El parámetro 'key' se\\
-    puede omitir, solo será necesario para recorrer una determinada clave de los diccionarios de\\
-    una lista de diccionarios.
+    Retorno: un valor que puede ser string, int o float
+    Descripción: define la sintaxis del valor a ser retornado de acuerdo al parámetro\\
+    'tipo_dato'. Por ejemplo: 'list_dict_str' expresa una lista de diccionarios, donde\\
+    el valor de la clave del diccionario es un string. Esta función puede ser usada en\\
+    iteraciones de 'for' en virtud del parámetro 'i' (índice de la lista). El parámetro\\
+    'key' solo será necesario para recorrer una determinada clave de los diccionarios\\
+    de una lista de diccionarios.
     '''
     if tipo_dato == "list_dict_str": dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num": dato = lista[i][key]
