@@ -249,10 +249,8 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             opcion_exportar = opcion
 
     if dato != "":
-        if imprimir_con_formato == False:
-            imprimir_dato(dato)
-        else:
-            imprimir_dato_con_formato(dato)
+        if imprimir_con_formato == False: imprimir_dato(dato)
+        else: imprimir_dato_con_formato(dato)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
     if exportar == False and (opcion_exportar == "2" or opcion_exportar == "20"):
