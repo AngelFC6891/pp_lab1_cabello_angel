@@ -332,7 +332,7 @@ def consultar_imprimir_con_formato()->bool:
     if re.match("^S$",consulta):
         pass
     else:
-        imprimir_dato("Se omitió impresión con formato\n")
+        imprimir_dato("Se omitió impresión con formato")
         flag_consulta = False
     return flag_consulta
 
