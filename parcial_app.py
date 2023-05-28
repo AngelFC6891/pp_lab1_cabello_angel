@@ -2,7 +2,7 @@ import re
 import json
 
 '''
-Tema: EXAMEN PARCIAL 1° CUATRIMESTRE
+Tema: 1er EXAMEN PARCIAL 1er CUATRIMESTRE
 
 Apellido: Cabello
 Nombre: Ángel Fabián
