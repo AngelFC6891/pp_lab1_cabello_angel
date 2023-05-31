@@ -126,6 +126,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     nombre_archivo = "default_name.csv"
     opcion_exportar = ""
     imprimir_con_formato = False
+    tabular = False
     match opcion:
         case "1":
             ordenar_bubble_sort(lista,"list_dict_str","nombre")
@@ -250,8 +251,11 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                     imprimir_con_formato = consultar_imprimir_con_formato()
                     nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "20":
-            dato = mostrar_jugadores_rankeados_con_tabulacion(lista)
+            dato_tabulado = mostrar_jugadores_rankeados_con_tabulacion(lista)
+            dato = mostrar_jugadores_rankeados_con_tabulacion(lista,False)
             nombre_archivo = "jugadores_rankeados.csv"
+            imprimir_con_formato = True
+            tabular = True
             opcion_exportar = opcion
         case "21":
             lista_cant_x_posicion = obtener_cant_jugadores_x_posición(lista)
@@ -270,7 +274,9 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         if imprimir_con_formato == False:
             if dato[0] == "\n": imprimir_dato(dato)
             else: imprimir_dato(f"\n{dato}")
-        else: imprimir_dato_con_formato(dato)
+        else:
+            if tabular == False: imprimir_dato_con_formato(dato)
+            else: imprimir_dato(dato_tabulado)
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
     if exportar == False and (opcion_exportar == "2" or opcion_exportar == "20"):
@@ -410,7 +416,7 @@ def consultar_imprimir_con_formato()->bool:
     '''
     consulta = input("Desea desea imprimir datos con formato? (S/N): ")
     flag_consulta = True
-    if re.match("^S$",consulta):
+    if re.match("S$|s$",consulta):
         pass
     else:
         imprimir_dato("Se omitió impresión con formato")
@@ -484,13 +490,21 @@ def obtener_todos_los_ranking_por_jugador(lista:list,lista_claves:list)->list:
     return lista_retorno
 
 
-def mostrar_jugadores_rankeados_con_tabulacion(lista:list)->str:
+def mostrar_jugadores_rankeados_con_tabulacion(lista:list,tabular:bool=True)->str:
     lista_claves_estadisticas = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
     lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_claves_estadisticas)
-    convertir_a_string_valores_de_claves(lista_jugadores_rankeados)
-    tabular_jugadores_rankeados(lista_jugadores_rankeados)
-    dato_previo = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
-    dato = tabular_encabezado_jugadores_rankeados(dato_previo)
+    if tabular == True:
+        convertir_a_string_valores_de_claves(lista_jugadores_rankeados)
+        tabular_jugadores_rankeados(lista_jugadores_rankeados)
+    dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
+    if tabular == True: dato = tabular_encabezado_jugadores_rankeados(dato)
+    return dato
+
+
+def mostrar_jugadores_rankeados_sin_tabulacion(lista:list)->str:
+    lista_claves_estadisticas = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
+    lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_claves_estadisticas)
+    dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
     return dato
 
 
