@@ -281,8 +281,8 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
 
 
 def mostrar_jugador_con_mejores_estadisiticas(lista:list)->str:
-    lista_keys = list(lista[0]["estadisticas"].keys())
-    lista_all_rankings = obtener_todos_los_ranking_por_jugador(lista,lista_keys)
+    lista_claves_estadisticas = list(lista[0]["estadisticas"].keys())
+    lista_all_rankings = obtener_todos_los_ranking_por_jugador(lista,lista_claves_estadisticas)
     for diccio in lista_all_rankings:
         promedio = calcular_promedio_todas_las_clave_valor(diccio)
         diccio["promedio_total_ranking"] = promedio
