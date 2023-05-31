@@ -1,5 +1,6 @@
 import re
 import json
+import pprint
 
 '''
 Tema: 1er EXAMEN PARCIAL 1er CUATRIMESTRE
@@ -48,7 +49,11 @@ def imprimir_menu():
     "     tenido un porcentaje de tiros de campo superior al valor ingresado\n"\
     "20 - BONUS !!! Mostrar la posición de cada jugador en los siguientes rankings:\n"\
     "               Puntos, Rebotes, Asistencias y Robos\n"\
-    "21 - Exportar a .csv\n"\
+    "21 - Mostrar cantidad total de jugadores de cada posición\n"\
+    "22 - Mostrar la lista de jugadores ordenadas por la cantidad de All-Star de forma descendente\n"\
+    "23 - Mostrar cuál jugador tiene la mejor estadística en cada rubro\n"\
+    "24 - Mostrar qué jugador tiene las mejores estadísticas de todos\n"\
+    "25 - Exportar a .csv\n"\
     "0 - SALIR\n"
     imprimir_dato(menu)
 
@@ -64,7 +69,7 @@ def menu_principal()->str:
     '''
     imprimir_menu()
     opcion = input("Seleccione opción: ")
-    if re.match(r"[0-9]$|1[0-9]$|2[0-1]$",opcion):
+    if re.match(r"[0-9]$|1[0-9]$|2[0-5]$",opcion):
         pass
     else:
         print("Opción inválida. Inténtelo nuevamente")
@@ -93,9 +98,10 @@ def lanzar_app(lista:list):
             case "0":
                 break
             case "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" |\
-                  "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20":
+                  "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" |\
+                    "22" | "23" | "24":
                 ejecutar_match_anidado(lista,opcion_seleccionada)
-            case "21":
+            case "25":
                 exportar_csv(lista)
         continuar()
 
@@ -244,10 +250,22 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                     imprimir_con_formato = consultar_imprimir_con_formato()
                     nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "20":
-            lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista)
+            lista_keys = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
+            lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_keys)
             dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
             nombre_archivo = "jugadores_rankeados.csv"
             opcion_exportar = opcion
+        case "21":
+            lista_cant_x_posicion = obtener_cant_jugadores_x_posición(lista)
+            dato = mostrar_data_hasta_clave_rango(lista_cant_x_posicion)
+            imprimir_con_formato = True
+        case "22":
+            lista_cant_logros_all_star = obtener_lista_x_cant_logros_all_star(lista)
+            dato = mostrar_data_hasta_clave_rango(lista_cant_logros_all_star,"logros_All-Star")
+        case "23":
+            dato = mostrar_mejores_jugadores_de_todas_las_estadisticas(lista)
+        case "24":
+            dato = mostrar_jugador_con_mejores_estadisiticas(lista)
 
     if dato != "":
         if imprimir_con_formato == False:
@@ -259,6 +277,74 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     if exportar == False and (opcion_exportar == "2" or opcion_exportar == "20"):
         consultar_exportar_archivo(lista_nombre_dato)
     return lista_nombre_dato
+
+
+def mostrar_jugador_con_mejores_estadisiticas(lista:list)->str:
+    lista_estadisticas_all_team = obtener_nombre_key_y_todas_las_estadisticas(lista)
+    lista_keys = list(lista_estadisticas_all_team[0].keys())
+    lista_keys.pop(0)
+    lista_all_rankings = obtener_todos_los_ranking_por_jugador(lista,lista_keys)
+    for diccio in lista_all_rankings:
+        promedio = calcular_promedio_todas_las_clave_valor(diccio)
+        diccio["promedio_total_ranking"] = promedio
+    ordenar_bubble_sort(lista_all_rankings,"list_dict_num","promedio_total_ranking")
+    dato = "El jugador con mejor promedio de ranking en todas "\
+           "las estadísticas es {0}, con {1:.2f}".format(lista_all_rankings[0]["nombre"],
+                                                          lista_all_rankings[0]["promedio_total_ranking"])
+    return dato
+
+
+def calcular_promedio_todas_las_clave_valor(diccio:dict)->float:
+    acumulador = 0
+    contador_claves = 0
+    for clave in diccio:
+        if type(diccio[clave]) != str:
+            acumulador += diccio[clave]
+            contador_claves += 1
+    promedio = acumulador / contador_claves
+    return promedio
+
+
+def mostrar_mejores_jugadores_de_todas_las_estadisticas(lista:list)->str:
+    lista_estadisticas_all_team = obtener_nombre_key_y_todas_las_estadisticas(lista)
+    lista_claves_estadisticas = lista_estadisticas_all_team[0].keys()
+    dato_total = ""
+    for clave in lista_claves_estadisticas:
+        if clave != "nombre":
+            dato_parcial = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num",clave)
+            dato_total = "{0}\n{1}".format(dato_total,dato_parcial)
+    return dato_total
+
+
+def obtener_lista_x_cant_logros_all_star(lista:list)->list:
+    lista_logros_all_team = obtener_nombre_y_logros_all_dream_team(lista)
+    for i in range(len(lista_logros_all_team)):
+        lista_logros = re.split(" - ",lista_logros_all_team[i]["logros"])
+        for logro in lista_logros:
+            if re.search(r"(All\-Star)",logro):
+                lista_logros_all_team[i]["logros_All-Star"] = logro
+                lista_logros_all_team[i].pop("logros")
+    clave = "logros_All-Star"
+    i = 0
+    while i < len(lista_logros_all_team):
+        if clave not in lista_logros_all_team[i]:
+            lista_logros_all_team.pop(i)
+        i += 1
+    ordenar_bubble_sort(lista_logros_all_team,"list_dict_key_int","logros_All-Star",False)
+    return lista_logros_all_team
+
+
+def obtener_cant_jugadores_x_posición(lista:list)->list:
+    lista_retorno = []
+    diccio_retorno = {}
+    for diccio in lista:
+        clave = diccio["posicion"]
+        if clave not in diccio_retorno:
+            diccio_retorno[clave] = 1
+        else:
+            diccio_retorno[clave] += 1
+    lista_retorno.append(diccio_retorno)
+    return lista_retorno
 
 
 def imprimir_dato_con_formato(string:str)->str:
@@ -365,7 +451,7 @@ def obtener_lista_ordenada_x_key_estadistica_y_key_jugador(lista:list,
     return lista
 
 
-def obtener_todos_los_ranking_por_jugador(lista:list)->list:
+def obtener_todos_los_ranking_por_jugador(lista:list,lista_claves:list)->list:
     '''
     Parámetros: una lista de diccionarios (necesaria)
     Retorno: una lista de diccionarios
@@ -382,7 +468,6 @@ def obtener_todos_los_ranking_por_jugador(lista:list)->list:
     actual y así siguiendo.
     '''
     lista_estadisticas = obtener_nombre_key_y_todas_las_estadisticas(lista)
-    lista_claves = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
     lista_retorno = []
     for clave in lista_claves:
         ordenar_bubble_sort(lista_estadisticas,"list_dict_num",clave,False)
@@ -702,6 +787,7 @@ def retornar_tipo_dato(lista:list,
     if tipo_dato == "list_dict_str": dato = lista[i][key][0]
     elif tipo_dato == "list_dict_num": dato = lista[i][key]
     elif tipo_dato == "list_dict_len_key": dato = len(lista[i][key])
+    elif tipo_dato == "list_dict_key_int": dato = int(lista[i][key][0:2])
     return dato
 
 
