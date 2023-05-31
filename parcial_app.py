@@ -122,8 +122,8 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
     su valor es 'True' bloquea todo lo anterior.
     '''
     lista_nombre_dato = []
-    dato = ""
-    nombre_archivo = ""
+    dato = "default_data"
+    nombre_archivo = "default_name.csv"
     opcion_exportar = ""
     imprimir_con_formato = False
     match opcion:
@@ -971,8 +971,8 @@ def seleccionar_opcion_a_guardar()->str:
     de ingresar un 'número' no admitido, imprime un aviso por\\
     terminal y devuelve el string '-1'
     '''
-    opcion = input("Seleccione opción a guardar (1-20): ")
-    if re.match(r"[0-9]$|1[0-9]$|20$",opcion):
+    opcion = input("Seleccione opción a guardar (1-24): ")
+    if re.match(r"[0-9]$|1[0-9]$|2[0-4]$",opcion):
         retorno = opcion
     else:
         imprimir_dato("Opción inválida. Inténtelo nuevamente")
