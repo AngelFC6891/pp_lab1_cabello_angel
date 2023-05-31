@@ -262,6 +262,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
         case "22":
             lista_cant_logros_all_star = obtener_lista_x_cant_logros_all_star(lista)
             dato = mostrar_data_hasta_clave_rango(lista_cant_logros_all_star,"logros_All-Star")
+            imprimir_con_formato = True
         case "23":
             dato = mostrar_mejores_jugadores_de_todas_las_estadisticas(lista)
         case "24":
