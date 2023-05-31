@@ -250,9 +250,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                     imprimir_con_formato = consultar_imprimir_con_formato()
                     nombre_archivo = "posiciones_A_Z_promedios_tiros_de_campo_mayor_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "20":
-            lista_keys = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
-            lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_keys)
-            dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
+            dato = mostrar_jugadores_rankeados_con_tabulacion(lista)
             nombre_archivo = "jugadores_rankeados.csv"
             opcion_exportar = opcion
         case "21":
@@ -484,6 +482,65 @@ def obtener_todos_los_ranking_por_jugador(lista:list,lista_claves:list)->list:
                         dictionary[re.sub("_totales","",clave)] = ranking
                         break
     return lista_retorno
+
+
+def mostrar_jugadores_rankeados_con_tabulacion(lista:list)->str:
+    lista_claves_estadisticas = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
+    lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_claves_estadisticas)
+    convertir_a_string_valores_de_claves(lista_jugadores_rankeados)
+    tabular_jugadores_rankeados(lista_jugadores_rankeados)
+    dato_previo = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
+    dato = tabular_encabezado_jugadores_rankeados(dato_previo)
+    return dato
+
+
+def tabular_encabezado_jugadores_rankeados(string:str)->str:
+    dato = ""
+    lista_lineas = re.split("\n",string)
+    lista_encabezados = re.split(",",lista_lineas[0])
+    lista_primera_linea = re.split(",",lista_lineas[1])
+    lista_headlines = []
+    for i in range(len(lista_encabezados)):
+        str_tab = ""
+        while len(str_tab) <= len(lista_primera_linea[i])-1:
+            if str_tab == "":
+                if lista_encabezados[i] == "Nombre": str_tab = "{0}{1}".format(lista_encabezados[i]," ")
+                else: str_tab = "{0}{1}".format(" ",lista_encabezados[i])
+            else:
+                if lista_encabezados[i] == "Nombre": str_tab = "{0}{1}".format(str_tab," ")
+                else: str_tab = "{0}{1}".format(" ",str_tab)
+        lista_headlines.append(str_tab)
+    lista_lineas[0] = " ".join(lista_headlines[:])
+    for i in range(1,len(lista_lineas)):
+        lista_lineas[i] = re.sub(","," ",lista_lineas[i])
+    dato = "\n".join(lista_lineas[:])
+    return dato
+
+
+def tabular_jugadores_rankeados(lista:list)->None:
+    lista_copia = lista[:]
+    lista_keys = lista[0].keys()
+    for key in lista_keys:
+        ordenar_bubble_sort(lista_copia,"list_dict_len_key",key)
+        maximo_len = len(lista_copia[len(lista_copia)-1][key])
+        if maximo_len < len(key): maximo_len = len(key)
+        for diccio in lista:
+            valor_tab = ""
+            while len(valor_tab) <= maximo_len:
+                if valor_tab == "":
+                    if key == "nombre": valor_tab = "{0}{1}".format(diccio[key]," ")
+                    else: valor_tab = "{0}{1}".format(" ",diccio[key])
+                else:
+                    if key == "nombre": valor_tab = "{0}{1}".format(valor_tab," ")
+                    else: valor_tab = "{0}{1}".format(" ",valor_tab)
+            diccio[key] = valor_tab
+
+            
+def convertir_a_string_valores_de_claves(lista:list)->None:
+    for diccio in lista:
+        for key in diccio:
+            if type(diccio[key]) == int:
+                diccio[key] = str(diccio[key])
 
 
 def ingresar_y_validar_valor()->float:
