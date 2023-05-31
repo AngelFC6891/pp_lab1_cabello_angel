@@ -281,8 +281,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
 
 
 def mostrar_jugador_con_mejores_estadisiticas(lista:list)->str:
-    lista_estadisticas_all_team = obtener_nombre_key_y_todas_las_estadisticas(lista)
-    lista_keys = list(lista_estadisticas_all_team[0].keys())
+    lista_keys = list(lista[0]["estadisticas"].keys())
     lista_keys.pop(0)
     lista_all_rankings = obtener_todos_los_ranking_por_jugador(lista,lista_keys)
     for diccio in lista_all_rankings:
