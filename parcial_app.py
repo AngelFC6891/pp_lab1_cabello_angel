@@ -500,13 +500,6 @@ def mostrar_jugadores_rankeados_con_tabulacion(lista:list,tabular:bool=True)->st
     return dato
 
 
-def mostrar_jugadores_rankeados_sin_tabulacion(lista:list)->str:
-    lista_claves_estadisticas = ["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"]
-    lista_jugadores_rankeados = obtener_todos_los_ranking_por_jugador(lista,lista_claves_estadisticas)
-    dato = mostrar_data_hasta_clave_rango(lista_jugadores_rankeados)
-    return dato
-
-
 def tabular_encabezado_jugadores_rankeados(string:str)->str:
     dato = ""
     lista_lineas = re.split("\n",string)
