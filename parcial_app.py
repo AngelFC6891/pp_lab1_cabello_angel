@@ -308,9 +308,8 @@ def mostrar_mejores_jugadores_de_todas_las_estadisticas(lista:list)->str:
     lista_claves_estadisticas = lista[0]["estadisticas"].keys()
     dato_total = ""
     for clave in lista_claves_estadisticas:
-        if clave != "nombre":
-            dato_parcial = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num",clave)
-            dato_total = "{0}\n{1}".format(dato_total,dato_parcial)
+        dato_parcial = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num",clave)
+        dato_total = "{0}\n{1}".format(dato_total,dato_parcial)
     return dato_total
 
 
