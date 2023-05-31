@@ -305,8 +305,7 @@ def calcular_promedio_todas_las_clave_valor(diccio:dict)->float:
 
 
 def mostrar_mejores_jugadores_de_todas_las_estadisticas(lista:list)->str:
-    lista_estadisticas_all_team = obtener_nombre_key_y_todas_las_estadisticas(lista)
-    lista_claves_estadisticas = lista_estadisticas_all_team[0].keys()
+    lista_claves_estadisticas = lista[0]["estadisticas"].keys()
     dato_total = ""
     for clave in lista_claves_estadisticas:
         if clave != "nombre":
