@@ -1,6 +1,5 @@
 import re
 import json
-import pprint
 
 '''
 Tema: 1er EXAMEN PARCIAL 1er CUATRIMESTRE
@@ -276,7 +275,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             else: imprimir_dato(f"\n{dato}")
         else:
             if tabular == False: imprimir_dato_con_formato(dato)
-            else: imprimir_dato(dato_tabulado)
+            else: imprimir_dato(f"\n{dato_tabulado}")
         lista_nombre_dato.append(nombre_archivo)
         lista_nombre_dato.append(dato)
     if exportar == False and (opcion_exportar == "2" or opcion_exportar == "20"):
