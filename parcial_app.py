@@ -166,7 +166,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","asistencias_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "9":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                             valor,
@@ -176,7 +176,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                 dato = mostrar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_puntos_por_partido_mayores_a_{0}.csv".format(re.sub("\.","_",str(valor)))
         case "10":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
@@ -186,7 +186,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
                 dato = mostrar_data_hasta_clave_rango(lista_promedios)
                 nombre_archivo = "promedios_rebotes_totales_mayores_a_{0}.csv".format(valor)
         case "11":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
@@ -202,7 +202,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","bloqueos_totales")
             nombre_archivo = "jugador_con_mayor_cant_asistencias_totales.csv"
         case "14":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
@@ -219,7 +219,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = mostrar_jugador_con_mayor_cant_logros(lista)
             nombre_archivo = "jugador_con_mayor_cant_logros.csv"
         case "17":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                         valor,
@@ -232,7 +232,7 @@ def ejecutar_match_anidado(lista:list,opcion:str,exportar:bool=False)->str:
             dato = mostrar_mayor_menor_x_clave_estadistica(lista,"list_dict_num","temporadas")
             nombre_archivo = "jugador_con_mayor_cant_temporadas_jugadas.csv"
         case "19":
-            valor = ingresar_y_validar_valor()
+            valor = ingresar_y_validar_porcentaje()
             if valor != -1:
                 lista_promedios = obtener_jugadores_mayores_menores_a_valor_ingresado_x_key(lista,
                                                                                             valor,
@@ -549,7 +549,7 @@ def convertir_a_string_valores_de_claves(lista:list)->None:
                 diccio[key] = str(diccio[key])
 
 
-def ingresar_y_validar_valor()->float:
+def ingresar_y_validar_porcentaje()->float:
     '''
     Parámetros: no requiere
     Retorno: un valor tipo float
@@ -559,7 +559,7 @@ def ingresar_y_validar_valor()->float:
     es válido.
     '''
     valor = input("Ingrese un valor: ")
-    if re.match(r"[1-9]$|[1-9]+\.[0-9][0-9]$|[1-9][0-9]+$|[1-9][0-9]+\.[0-9]{1}$|[1-9][0-9]+\.[0-9]{2}$",valor):
+    if re.match(r"[1-9]$|[1-9]+\.[0-9][0-9]$|[1-9][0-9]+$|[1-9][0-9]+\.[0-9]{1}$|[1-9][0-9]+\.[0-9]{2}$|100",valor):
         valor = float(valor)
     else:
         imprimir_dato("Valor no válido. Inténtelo nuevamente")
